@@ -10,6 +10,8 @@ import ParticleBackground from "@/components/particle-background"
 import { CommandMenu } from "@/components/command-menu"
 import { useMobile } from "@/hooks/use-mobile"
 import Image from "next/image"
+import { LanguageSwitcher } from "@/components/language-switcher"
+import { useLanguage } from "@/contexts/language-context"
 
 export default function Home() {
   const [showCommand, setShowCommand] = useState(false)
@@ -17,6 +19,7 @@ export default function Home() {
   const featuresRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll()
   const isMobile = useMobile()
+  const { t } = useLanguage()
 
   const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0])
   const scale = useTransform(scrollYProgress, [0, 0.2], [1, 0.9])
@@ -55,24 +58,26 @@ export default function Home() {
 
           <nav className="hidden md:flex gap-6">
             <Link href="#features" className="text-sm font-medium text-white/70 hover:text-white transition-colors">
-              Recursos
+              {t("nav.features")}
             </Link>
             <Link href="#installation" className="text-sm font-medium text-white/70 hover:text-white transition-colors">
-              Instalação
+              {t("nav.installation")}
             </Link>
             <Link href="#usage" className="text-sm font-medium text-white/70 hover:text-white transition-colors">
-              Como Usar
+              {t("nav.usage")}
             </Link>
           </nav>
 
           <div className="flex items-center gap-4">
+            <LanguageSwitcher />
+
             <Button
               variant="outline"
               size="sm"
               className="hidden md:flex border-white/20 text-white/70 hover:text-white hover:border-white/50"
               onClick={() => setShowCommand(true)}
             >
-              <span className="text-xs">Pressione</span>
+              <span className="text-xs">{t("nav.press")}</span>
               <kbd className="pointer-events-none mx-1 inline-flex h-5 select-none items-center gap-1 rounded border border-white/20 bg-black px-1.5 font-mono text-[10px] font-medium text-white/70">
                 <span className="text-xs">⌘/Ctrl</span>K
               </kbd>
@@ -110,7 +115,7 @@ export default function Home() {
                 className="mb-4 flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1 text-sm backdrop-blur"
               >
                 <Sparkles className="h-3.5 w-3.5 text-teal-400" />
-                <span>Anime no terminal, simples e poderoso</span>
+                <span>{t("hero.tagline")}</span>
               </motion.div>
 
               <motion.h1
@@ -128,8 +133,7 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: 0.2 }}
                 className="text-lg md:text-xl text-white/70 mb-8 max-w-2xl"
               >
-                Um player de anime para terminal construído em Go, que permite buscar, assistir e baixar episódios
-                diretamente no MPV com uma experiência fluida e moderna.
+                {t("hero.description")}
               </motion.p>
 
               <motion.div
@@ -145,7 +149,7 @@ export default function Home() {
                 >
                   <Link href="https://github.com/alvarorichard/GoAnime" target="_blank" rel="noopener noreferrer">
                     <Github className="mr-2 h-5 w-5" />
-                    Ver no GitHub
+                    {t("hero.github")}
                   </Link>
                 </Button>
 
@@ -157,7 +161,7 @@ export default function Home() {
                 >
                   <Link href="#installation">
                     <Download className="mr-2 h-5 w-5" />
-                    Instalar Agora
+                    {t("hero.install")}
                   </Link>
                 </Button>
               </motion.div>
@@ -207,7 +211,7 @@ export default function Home() {
               transition={{ duration: 0.5 }}
               className="inline-block rounded-full bg-white/5 px-3 py-1 text-sm text-white/70 backdrop-blur border border-white/10 mb-4"
             >
-              <span>Recursos Incríveis</span>
+              <span>{t("features.badge")}</span>
             </motion.div>
 
             <motion.h2
@@ -217,7 +221,7 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="text-3xl md:text-5xl font-bold tracking-tighter mb-4 bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-purple-500"
             >
-              Experiência Extraordinária
+              {t("features.title")}
             </motion.h2>
 
             <motion.p
@@ -227,33 +231,130 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="text-white/70 max-w-2xl mx-auto"
             >
-              Descubra o que torna o GoAnime uma ferramenta única para os amantes de anime
+              {t("features.subtitle")}
             </motion.p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {features.map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.1 * index }}
-              >
-                <Card className="bg-gradient-to-br from-gray-900 to-black border-white/10 overflow-hidden group relative h-full">
-                  <div className="absolute inset-0 bg-gradient-to-br from-teal-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <CardContent className="p-6 relative z-10">
-                    <div className="mb-4 rounded-full w-12 h-12 flex items-center justify-center bg-gradient-to-br from-teal-500 to-purple-600">
-                      {feature.icon}
-                    </div>
-                    <h3 className="text-xl font-bold mb-2 text-white group-hover:text-teal-400 transition-colors">
-                      {feature.title}
-                    </h3>
-                    <p className="text-white/70">{feature.description}</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              <Card className="bg-gradient-to-br from-gray-900 to-black border-white/10 overflow-hidden group relative h-full">
+                <div className="absolute inset-0 bg-gradient-to-br from-teal-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <CardContent className="p-6 relative z-10">
+                  <div className="mb-4 rounded-full w-12 h-12 flex items-center justify-center bg-gradient-to-br from-teal-500 to-purple-600">
+                    <Terminal className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-2 text-white group-hover:text-teal-400 transition-colors">
+                    {t("features.cli.title")}
+                  </h3>
+                  <p className="text-white/70">{t("features.cli.description")}</p>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <Card className="bg-gradient-to-br from-gray-900 to-black border-white/10 overflow-hidden group relative h-full">
+                <div className="absolute inset-0 bg-gradient-to-br from-teal-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <CardContent className="p-6 relative z-10">
+                  <div className="mb-4 rounded-full w-12 h-12 flex items-center justify-center bg-gradient-to-br from-teal-500 to-purple-600">
+                    <Play className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-2 text-white group-hover:text-teal-400 transition-colors">
+                    {t("features.playback.title")}
+                  </h3>
+                  <p className="text-white/70">{t("features.playback.description")}</p>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
+              <Card className="bg-gradient-to-br from-gray-900 to-black border-white/10 overflow-hidden group relative h-full">
+                <div className="absolute inset-0 bg-gradient-to-br from-teal-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <CardContent className="p-6 relative z-10">
+                  <div className="mb-4 rounded-full w-12 h-12 flex items-center justify-center bg-gradient-to-br from-teal-500 to-purple-600">
+                    <Zap className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-2 text-white group-hover:text-teal-400 transition-colors">
+                    {t("features.fast.title")}
+                  </h3>
+                  <p className="text-white/70">{t("features.fast.description")}</p>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
+              <Card className="bg-gradient-to-br from-gray-900 to-black border-white/10 overflow-hidden group relative h-full">
+                <div className="absolute inset-0 bg-gradient-to-br from-teal-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <CardContent className="p-6 relative z-10">
+                  <div className="mb-4 rounded-full w-12 h-12 flex items-center justify-center bg-gradient-to-br from-teal-500 to-purple-600">
+                    <Layers className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-2 text-white group-hover:text-teal-400 transition-colors">
+                    {t("features.sources.title")}
+                  </h3>
+                  <p className="text-white/70">{t("features.sources.description")}</p>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+            >
+              <Card className="bg-gradient-to-br from-gray-900 to-black border-white/10 overflow-hidden group relative h-full">
+                <div className="absolute inset-0 bg-gradient-to-br from-teal-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <CardContent className="p-6 relative z-10">
+                  <div className="mb-4 rounded-full w-12 h-12 flex items-center justify-center bg-gradient-to-br from-teal-500 to-purple-600">
+                    <Code className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-2 text-white group-hover:text-teal-400 transition-colors">
+                    {t("features.opensource.title")}
+                  </h3>
+                  <p className="text-white/70">{t("features.opensource.description")}</p>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+            >
+              <Card className="bg-gradient-to-br from-gray-900 to-black border-white/10 overflow-hidden group relative h-full">
+                <div className="absolute inset-0 bg-gradient-to-br from-teal-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <CardContent className="p-6 relative z-10">
+                  <div className="mb-4 rounded-full w-12 h-12 flex items-center justify-center bg-gradient-to-br from-teal-500 to-purple-600">
+                    <Download className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-2 text-white group-hover:text-teal-400 transition-colors">
+                    {t("features.download.title")}
+                  </h3>
+                  <p className="text-white/70">{t("features.download.description")}</p>
+                </CardContent>
+              </Card>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -274,7 +375,7 @@ export default function Home() {
               transition={{ duration: 0.5 }}
               className="inline-block rounded-full bg-white/5 px-3 py-1 text-sm text-white/70 backdrop-blur border border-white/10 mb-4"
             >
-              <span>Instalação Simples</span>
+              <span>{t("install.badge")}</span>
             </motion.div>
 
             <motion.h2
@@ -284,7 +385,7 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="text-3xl md:text-5xl font-bold tracking-tighter mb-4 bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-purple-500"
             >
-              Comece em Segundos
+              {t("install.title")}
             </motion.h2>
 
             <motion.p
@@ -294,49 +395,145 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="text-white/70 max-w-2xl mx-auto"
             >
-              Escolha o método de instalação que funciona melhor para você
+              {t("install.subtitle")}
             </motion.p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {installations.map((install, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.1 * index }}
-              >
-                <Card className="bg-gradient-to-br from-gray-900 to-black border-white/10 overflow-hidden group relative h-full">
-                  <div className="absolute inset-0 bg-gradient-to-br from-teal-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <CardContent className="p-6 relative z-10">
-                    <h3 className="text-xl font-bold mb-2 text-white group-hover:text-teal-400 transition-colors flex items-center">
-                      {install.icon}
-                      <span className="ml-2">{install.title}</span>
-                    </h3>
-                    <p className="text-white/70 mb-4">{install.description}</p>
-                    <div className="bg-black/50 rounded-lg border border-white/10 p-4 font-mono text-sm overflow-x-auto">
-                      {install.code.split("\n").map((line, i) => (
-                        <div key={i} className="whitespace-pre">
-                          {line}
-                        </div>
-                      ))}
-                    </div>
-                    <Button variant="link" className="mt-4 text-teal-400 hover:text-teal-300 p-0 h-auto">
-                      <Link
-                        href="https://github.com/alvarorichard/GoAnime"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center"
-                      >
-                        Saiba mais
-                        <ChevronRight className="ml-1 h-4 w-4" />
-                      </Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              <Card className="bg-gradient-to-br from-gray-900 to-black border-white/10 overflow-hidden group relative h-full">
+                <div className="absolute inset-0 bg-gradient-to-br from-teal-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <CardContent className="p-6 relative z-10">
+                  <h3 className="text-xl font-bold mb-2 text-white group-hover:text-teal-400 transition-colors flex items-center">
+                    <Terminal className="h-5 w-5 text-teal-400 mr-2" />
+                    {t("install.universal.title")}
+                  </h3>
+                  <p className="text-white/70 mb-4">{t("install.universal.description")}</p>
+                  <div className="bg-black/50 rounded-lg border border-white/10 p-4 font-mono text-sm overflow-x-auto">
+                    <div className="whitespace-pre">go install github.com/alvarorichard/Goanime/cmd/goanime@latest</div>
+                  </div>
+                  <Button variant="link" className="mt-4 text-teal-400 hover:text-teal-300 p-0 h-auto">
+                    <Link
+                      href="https://github.com/alvarorichard/GoAnime"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center"
+                    >
+                      {t("install.learnmore")}
+                      <ChevronRight className="ml-1 h-4 w-4" />
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <Card className="bg-gradient-to-br from-gray-900 to-black border-white/10 overflow-hidden group relative h-full">
+                <div className="absolute inset-0 bg-gradient-to-br from-teal-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <CardContent className="p-6 relative z-10">
+                  <h3 className="text-xl font-bold mb-2 text-white group-hover:text-teal-400 transition-colors flex items-center">
+                    <Code className="h-5 w-5 text-teal-400 mr-2" />
+                    {t("install.manual.title")}
+                  </h3>
+                  <p className="text-white/70 mb-4">{t("install.manual.description")}</p>
+                  <div className="bg-black/50 rounded-lg border border-white/10 p-4 font-mono text-sm overflow-x-auto">
+                    <div className="whitespace-pre">git clone https://github.com/alvarorichard/GoAnime.git</div>
+                    <div className="whitespace-pre">cd GoAnime</div>
+                    <div className="whitespace-pre">sudo bash install.sh</div>
+                  </div>
+                  <Button variant="link" className="mt-4 text-teal-400 hover:text-teal-300 p-0 h-auto">
+                    <Link
+                      href="https://github.com/alvarorichard/GoAnime"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center"
+                    >
+                      {t("install.learnmore")}
+                      <ChevronRight className="ml-1 h-4 w-4" />
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
+              <Card className="bg-gradient-to-br from-gray-900 to-black border-white/10 overflow-hidden group relative h-full">
+                <div className="absolute inset-0 bg-gradient-to-br from-teal-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <CardContent className="p-6 relative z-10">
+                  <h3 className="text-xl font-bold mb-2 text-white group-hover:text-teal-400 transition-colors flex items-center">
+                    <Layers className="h-5 w-5 text-teal-400 mr-2" />
+                    {t("install.arch.title")}
+                  </h3>
+                  <p className="text-white/70 mb-4">{t("install.arch.description")}</p>
+                  <div className="bg-black/50 rounded-lg border border-white/10 p-4 font-mono text-sm overflow-x-auto">
+                    <div className="whitespace-pre"># Usando paru</div>
+                    <div className="whitespace-pre">paru -S goanime</div>
+                    <div className="whitespace-pre"></div>
+                    <div className="whitespace-pre"># Usando yay</div>
+                    <div className="whitespace-pre">yay -S goanime</div>
+                  </div>
+                  <Button variant="link" className="mt-4 text-teal-400 hover:text-teal-300 p-0 h-auto">
+                    <Link
+                      href="https://github.com/alvarorichard/GoAnime"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center"
+                    >
+                      {t("install.learnmore")}
+                      <ChevronRight className="ml-1 h-4 w-4" />
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
+              <Card className="bg-gradient-to-br from-gray-900 to-black border-white/10 overflow-hidden group relative h-full">
+                <div className="absolute inset-0 bg-gradient-to-br from-teal-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <CardContent className="p-6 relative z-10">
+                  <h3 className="text-xl font-bold mb-2 text-white group-hover:text-teal-400 transition-colors flex items-center">
+                    <Sparkles className="h-5 w-5 text-teal-400 mr-2" />
+                    {t("install.nixos.title")}
+                  </h3>
+                  <p className="text-white/70 mb-4">{t("install.nixos.description")}</p>
+                  <div className="bg-black/50 rounded-lg border border-white/10 p-4 font-mono text-sm overflow-x-auto">
+                    <div className="whitespace-pre"># Execução temporária</div>
+                    <div className="whitespace-pre">nix github:alvarorichard/GoAnime</div>
+                  </div>
+                  <Button variant="link" className="mt-4 text-teal-400 hover:text-teal-300 p-0 h-auto">
+                    <Link
+                      href="https://github.com/alvarorichard/GoAnime"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center"
+                    >
+                      {t("install.learnmore")}
+                      <ChevronRight className="ml-1 h-4 w-4" />
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -352,7 +549,7 @@ export default function Home() {
               transition={{ duration: 0.5 }}
               className="inline-block rounded-full bg-white/5 px-3 py-1 text-sm text-white/70 backdrop-blur border border-white/10 mb-4"
             >
-              <span>Como Usar</span>
+              <span>{t("usage.badge")}</span>
             </motion.div>
 
             <motion.h2
@@ -362,7 +559,7 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="text-3xl md:text-5xl font-bold tracking-tighter mb-4 bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-purple-500"
             >
-              Simples e Intuitivo
+              {t("usage.title")}
             </motion.h2>
 
             <motion.p
@@ -372,7 +569,7 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="text-white/70 max-w-2xl mx-auto"
             >
-              Comandos simples para começar a usar o GoAnime imediatamente
+              {t("usage.subtitle")}
             </motion.p>
           </div>
 
@@ -385,22 +582,61 @@ export default function Home() {
               className="order-2 lg:order-1"
             >
               <div className="space-y-6">
-                {usageSteps.map((step, index) => (
-                  <div key={index} className="flex gap-4">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-purple-600 flex items-center justify-center text-white font-bold">
-                      {index + 1}
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-bold text-white mb-1">{step.title}</h3>
-                      <p className="text-white/70">{step.description}</p>
-                      {step.code && (
-                        <div className="mt-2 bg-black/50 rounded-lg border border-white/10 p-3 font-mono text-sm overflow-x-auto">
-                          <code className="text-teal-400">{step.code}</code>
-                        </div>
-                      )}
+                <div className="flex gap-4">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-purple-600 flex items-center justify-center text-white font-bold">
+                    1
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-white mb-1">{t("usage.step1.title")}</h3>
+                    <p className="text-white/70">{t("usage.step1.description")}</p>
+                    <div className="mt-2 bg-black/50 rounded-lg border border-white/10 p-3 font-mono text-sm overflow-x-auto">
+                      <code className="text-teal-400">go-anime # Linux/macOS goanime # Windows</code>
                     </div>
                   </div>
-                ))}
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-purple-600 flex items-center justify-center text-white font-bold">
+                    2
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-white mb-1">{t("usage.step2.title")}</h3>
+                    <p className="text-white/70">{t("usage.step2.description")}</p>
+                    <div className="mt-2 bg-black/50 rounded-lg border border-white/10 p-3 font-mono text-sm overflow-x-auto">
+                      <code className="text-teal-400">goanime "demon slayer"</code>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-purple-600 flex items-center justify-center text-white font-bold">
+                    3
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-white mb-1">{t("usage.step3.title")}</h3>
+                    <p className="text-white/70">{t("usage.step3.description")}</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-purple-600 flex items-center justify-center text-white font-bold">
+                    4
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-white mb-1">{t("usage.step4.title")}</h3>
+                    <p className="text-white/70">{t("usage.step4.description")}</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-purple-600 flex items-center justify-center text-white font-bold">
+                    5
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-white mb-1">{t("usage.step5.title")}</h3>
+                    <p className="text-white/70">{t("usage.step5.description")}</p>
+                  </div>
+                </div>
               </div>
             </motion.div>
 
@@ -476,16 +712,14 @@ export default function Home() {
             className="max-w-3xl mx-auto text-center"
           >
             <div className="inline-block rounded-full bg-white/5 px-3 py-1 text-sm text-white/70 backdrop-blur border border-white/10 mb-4">
-              <span>Pronto para começar?</span>
+              <span>{t("cta.badge")}</span>
             </div>
 
             <h2 className="text-3xl md:text-5xl font-bold tracking-tighter mb-4 bg-clip-text text-transparent bg-gradient-to-r from-teal-400 via-purple-500 to-pink-500">
-              Experimente o GoAnime Hoje
+              {t("cta.title")}
             </h2>
 
-            <p className="text-white/70 mb-8 text-lg">
-              Junte-se a milhares de usuários que já estão aproveitando a melhor experiência de anime no terminal.
-            </p>
+            <p className="text-white/70 mb-8 text-lg">{t("cta.subtitle")}</p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
@@ -495,7 +729,7 @@ export default function Home() {
               >
                 <Link href="https://github.com/alvarorichard/GoAnime" target="_blank" rel="noopener noreferrer">
                   <Github className="mr-2 h-5 w-5" />
-                  Ver no GitHub
+                  {t("hero.github")}
                 </Link>
               </Button>
 
@@ -507,7 +741,7 @@ export default function Home() {
               >
                 <Link href="#installation">
                   <Download className="mr-2 h-5 w-5" />
-                  Instalar Agora
+                  {t("hero.install")}
                 </Link>
               </Button>
             </div>
@@ -527,7 +761,7 @@ export default function Home() {
             </div>
 
             <p className="text-sm text-white/50">
-              Desenvolvido por{" "}
+              {t("footer.developed")}{" "}
               <Link
                 href="https://github.com/alvarorichard"
                 target="_blank"
@@ -555,88 +789,3 @@ export default function Home() {
     </div>
   )
 }
-
-const features = [
-  {
-    icon: <Terminal className="h-6 w-6 text-white" />,
-    title: "Interface CLI Elegante",
-    description: "Interface de linha de comando intuitiva e moderna para buscar e assistir animes com facilidade.",
-  },
-  {
-    icon: <Play className="h-6 w-6 text-white" />,
-    title: "Reprodução Direta",
-    description: "Reproduza episódios diretamente no MPV sem precisar abrir o navegador ou outros aplicativos.",
-  },
-  {
-    icon: <Zap className="h-6 w-6 text-white" />,
-    title: "Rápido e Eficiente",
-    description: "Construído em Go para oferecer desempenho excepcional e consumo mínimo de recursos.",
-  },
-  {
-    icon: <Layers className="h-6 w-6 text-white" />,
-    title: "Múltiplas Fontes",
-    description: "Acesse animes de várias fontes para garantir a melhor qualidade e disponibilidade.",
-  },
-  {
-    icon: <Code className="h-6 w-6 text-white" />,
-    title: "Código Aberto",
-    description: "Projeto totalmente open source, permitindo contribuições e personalizações da comunidade.",
-  },
-  {
-    icon: <Download className="h-6 w-6 text-white" />,
-    title: "Download de Episódios",
-    description: "Baixe episódios para assistir offline quando e onde quiser, sem depender de conexão com a internet.",
-  },
-]
-
-const installations = [
-  {
-    icon: <Terminal className="h-5 w-5 text-teal-400" />,
-    title: "Instalação Universal",
-    description: "Recomendado para a maioria dos usuários (apenas Go necessário)",
-    code: "go install github.com/alvarorichard/Goanime/cmd/goanime@latest",
-  },
-  {
-    icon: <Code className="h-5 w-5 text-teal-400" />,
-    title: "Instalação Manual",
-    description: "Clone o repositório e instale manualmente",
-    code: "git clone https://github.com/alvarorichard/GoAnime.git\ncd GoAnime\nsudo bash install.sh",
-  },
-  {
-    icon: <Layers className="h-5 w-5 text-teal-400" />,
-    title: "Arch Linux (AUR)",
-    description: "Para usuários do Arch Linux",
-    code: "# Usando paru\nparu -S goanime\n\n# Usando yay\nyay -S goanime",
-  },
-  {
-    icon: <Sparkles className="h-5 w-5 text-teal-400" />,
-    title: "NixOS (Flakes)",
-    description: "Para usuários do NixOS",
-    code: "# Execução temporária\nnix github:alvarorichard/GoAnime",
-  },
-]
-
-const usageSteps = [
-  {
-    title: "Inicie o GoAnime",
-    description: "Abra seu terminal e execute o comando para iniciar o GoAnime.",
-    code: "go-anime    # Linux/macOS\ngoanime     # Windows",
-  },
-  {
-    title: "Busque seu anime favorito",
-    description: "Digite o nome do anime que deseja assistir ou use a busca direta.",
-    code: 'goanime "demon slayer"',
-  },
-  {
-    title: "Selecione o anime",
-    description: "Navegue pela lista de resultados usando as setas do teclado e pressione Enter para selecionar.",
-  },
-  {
-    title: "Escolha o episódio",
-    description: "Selecione o episódio que deseja assistir da lista apresentada.",
-  },
-  {
-    title: "Aproveite!",
-    description: "O episódio será reproduzido automaticamente no MPV. Relaxe e aproveite seu anime!",
-  },
-]

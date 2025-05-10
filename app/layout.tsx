@@ -2,6 +2,7 @@ import type React from "react"
 import "@/app/globals.css"
 import { Inter } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
+import { LanguageProviderWrapper } from "@/components/language-provider-wrapper"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -20,8 +21,8 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-          {children}
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+          <LanguageProviderWrapper>{children}</LanguageProviderWrapper>
         </ThemeProvider>
       </body>
     </html>

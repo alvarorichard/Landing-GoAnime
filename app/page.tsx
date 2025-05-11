@@ -108,38 +108,37 @@ export default function Home() {
         <div className="container px-4 md:px-6 relative z-10">
           <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
             <div className="flex flex-col items-start text-left md:w-1/2">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
+              <div
+                data-aos="fade-up"
+                data-aos-duration="800"
                 className="mb-4 flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1 text-sm backdrop-blur"
               >
                 <Sparkles className="h-3.5 w-3.5 text-teal-400" />
                 <span>{t("hero.tagline")}</span>
-              </motion.div>
+              </div>
 
-              <motion.h1
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
+              <h1
+                data-aos="fade-up"
+                data-aos-duration="800"
+                data-aos-delay="100"
                 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tighter mb-4 bg-clip-text text-transparent bg-gradient-to-r from-teal-400 via-purple-500 to-pink-500"
               >
                 GoAnime
-              </motion.h1>
+              </h1>
 
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
+              <p
+                data-aos="fade-up"
+                data-aos-duration="800"
+                data-aos-delay="200"
                 className="text-lg md:text-xl text-white/70 mb-8 max-w-2xl"
               >
                 {t("hero.description")}
-              </motion.p>
+              </p>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
+              <div
+                data-aos="fade-up"
+                data-aos-duration="800"
+                data-aos-delay="300"
                 className="flex flex-col sm:flex-row gap-4"
               >
                 <Button
@@ -164,13 +163,13 @@ export default function Home() {
                     {t("hero.install")}
                   </Link>
                 </Button>
-              </motion.div>
+              </div>
             </div>
 
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.7, delay: 0.4, type: "spring" }}
+            <div
+              data-aos="fade-left"
+              data-aos-duration="1000"
+              data-aos-delay="400"
               className="md:w-1/2 flex justify-center"
             >
               <div className="relative">
@@ -191,10 +190,8 @@ export default function Home() {
                   />
                 </motion.div>
               </div>
-            </motion.div>
+            </div>
           </div>
-
-          <div></div>
         </div>
 
         <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black to-transparent"></div>
@@ -204,43 +201,38 @@ export default function Home() {
       <section id="features" ref={featuresRef} className="py-20 md:py-32 relative">
         <div className="container px-4 md:px-6 relative z-10">
           <div className="text-center mb-16">
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
+            <div
+              data-aos="fade-up"
+              data-aos-duration="800"
               className="inline-block rounded-full bg-white/5 px-3 py-1 text-sm text-white/70 backdrop-blur border border-white/10 mb-4"
             >
               <span>{t("features.badge")}</span>
-            </motion.div>
+            </div>
 
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.1 }}
+            <h2
+              data-aos="fade-up"
+              data-aos-duration="800"
+              data-aos-delay="100"
               className="text-3xl md:text-5xl font-bold tracking-tighter mb-4 bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-purple-500"
             >
               {t("features.title")}
-            </motion.h2>
+            </h2>
 
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+            <p
+              data-aos="fade-up"
+              data-aos-duration="800"
+              data-aos-delay="200"
               className="text-white/70 max-w-2xl mx-auto"
             >
               {t("features.subtitle")}
-            </motion.p>
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.1 }}
+            <div
+              data-aos="fade-up"
+              data-aos-duration="800"
+              data-aos-delay="100"
             >
               <Card className="bg-gradient-to-br from-gray-900 to-black border-white/10 overflow-hidden group relative h-full">
                 <div className="absolute inset-0 bg-gradient-to-br from-teal-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -254,13 +246,12 @@ export default function Home() {
                   <p className="text-white/70">{t("features.cli.description")}</p>
                 </CardContent>
               </Card>
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+            <div
+              data-aos="fade-up"
+              data-aos-duration="800"
+              data-aos-delay="200"
             >
               <Card className="bg-gradient-to-br from-gray-900 to-black border-white/10 overflow-hidden group relative h-full">
                 <div className="absolute inset-0 bg-gradient-to-br from-teal-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -274,13 +265,12 @@ export default function Home() {
                   <p className="text-white/70">{t("features.playback.description")}</p>
                 </CardContent>
               </Card>
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.3 }}
+            <div
+              data-aos="fade-up"
+              data-aos-duration="800"
+              data-aos-delay="300"
             >
               <Card className="bg-gradient-to-br from-gray-900 to-black border-white/10 overflow-hidden group relative h-full">
                 <div className="absolute inset-0 bg-gradient-to-br from-teal-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -294,13 +284,12 @@ export default function Home() {
                   <p className="text-white/70">{t("features.fast.description")}</p>
                 </CardContent>
               </Card>
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.4 }}
+            <div
+              data-aos="fade-up"
+              data-aos-duration="800"
+              data-aos-delay="400"
             >
               <Card className="bg-gradient-to-br from-gray-900 to-black border-white/10 overflow-hidden group relative h-full">
                 <div className="absolute inset-0 bg-gradient-to-br from-teal-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -314,13 +303,12 @@ export default function Home() {
                   <p className="text-white/70">{t("features.sources.description")}</p>
                 </CardContent>
               </Card>
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.5 }}
+            <div
+              data-aos="fade-up"
+              data-aos-duration="800"
+              data-aos-delay="500"
             >
               <Card className="bg-gradient-to-br from-gray-900 to-black border-white/10 overflow-hidden group relative h-full">
                 <div className="absolute inset-0 bg-gradient-to-br from-teal-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -334,13 +322,12 @@ export default function Home() {
                   <p className="text-white/70">{t("features.opensource.description")}</p>
                 </CardContent>
               </Card>
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.6 }}
+            <div
+              data-aos="fade-up"
+              data-aos-duration="800"
+              data-aos-delay="600"
             >
               <Card className="bg-gradient-to-br from-gray-900 to-black border-white/10 overflow-hidden group relative h-full">
                 <div className="absolute inset-0 bg-gradient-to-br from-teal-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -354,7 +341,7 @@ export default function Home() {
                   <p className="text-white/70">{t("features.download.description")}</p>
                 </CardContent>
               </Card>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
@@ -368,43 +355,38 @@ export default function Home() {
 
         <div className="container px-4 md:px-6 relative z-10">
           <div className="text-center mb-16">
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
+            <div
+              data-aos="fade-up"
+              data-aos-duration="800"
               className="inline-block rounded-full bg-white/5 px-3 py-1 text-sm text-white/70 backdrop-blur border border-white/10 mb-4"
             >
               <span>{t("install.badge")}</span>
-            </motion.div>
+            </div>
 
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.1 }}
+            <h2
+              data-aos="fade-up"
+              data-aos-duration="800"
+              data-aos-delay="100"
               className="text-3xl md:text-5xl font-bold tracking-tighter mb-4 bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-purple-500"
             >
               {t("install.title")}
-            </motion.h2>
+            </h2>
 
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+            <p
+              data-aos="fade-up"
+              data-aos-duration="800"
+              data-aos-delay="200"
               className="text-white/70 max-w-2xl mx-auto"
             >
               {t("install.subtitle")}
-            </motion.p>
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.1 }}
+            <div
+              data-aos="fade-up"
+              data-aos-duration="800"
+              data-aos-delay="100"
             >
               <Card className="bg-gradient-to-br from-gray-900 to-black border-white/10 overflow-hidden group relative h-full">
                 <div className="absolute inset-0 bg-gradient-to-br from-teal-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -430,13 +412,12 @@ export default function Home() {
                   </Button>
                 </CardContent>
               </Card>
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+            <div
+              data-aos="fade-up"
+              data-aos-duration="800"
+              data-aos-delay="200"
             >
               <Card className="bg-gradient-to-br from-gray-900 to-black border-white/10 overflow-hidden group relative h-full">
                 <div className="absolute inset-0 bg-gradient-to-br from-teal-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -464,13 +445,12 @@ export default function Home() {
                   </Button>
                 </CardContent>
               </Card>
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.3 }}
+            <div
+              data-aos="fade-up"
+              data-aos-duration="800"
+              data-aos-delay="300"
             >
               <Card className="bg-gradient-to-br from-gray-900 to-black border-white/10 overflow-hidden group relative h-full">
                 <div className="absolute inset-0 bg-gradient-to-br from-teal-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -500,13 +480,12 @@ export default function Home() {
                   </Button>
                 </CardContent>
               </Card>
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.4 }}
+            <div
+              data-aos="fade-up"
+              data-aos-duration="800"
+              data-aos-delay="400"
             >
               <Card className="bg-gradient-to-br from-gray-900 to-black border-white/10 overflow-hidden group relative h-full">
                 <div className="absolute inset-0 bg-gradient-to-br from-teal-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -533,7 +512,7 @@ export default function Home() {
                   </Button>
                 </CardContent>
               </Card>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
@@ -542,43 +521,38 @@ export default function Home() {
       <section id="usage" className="py-20 md:py-32 relative">
         <div className="container px-4 md:px-6 relative z-10">
           <div className="text-center mb-16">
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
+            <div
+              data-aos="fade-up"
+              data-aos-duration="800"
               className="inline-block rounded-full bg-white/5 px-3 py-1 text-sm text-white/70 backdrop-blur border border-white/10 mb-4"
             >
               <span>{t("usage.badge")}</span>
-            </motion.div>
+            </div>
 
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.1 }}
+            <h2
+              data-aos="fade-up"
+              data-aos-duration="800"
+              data-aos-delay="100"
               className="text-3xl md:text-5xl font-bold tracking-tighter mb-4 bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-purple-500"
             >
               {t("usage.title")}
-            </motion.h2>
+            </h2>
 
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+            <p
+              data-aos="fade-up"
+              data-aos-duration="800"
+              data-aos-delay="200"
               className="text-white/70 max-w-2xl mx-auto"
             >
               {t("usage.subtitle")}
-            </motion.p>
+            </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
+            <div
+              data-aos="fade-up"
+              data-aos-duration="800"
+              data-aos-delay="300"
               className="order-2 lg:order-1"
             >
               <div className="space-y-6">
@@ -638,13 +612,12 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
+            <div
+              data-aos="fade-up"
+              data-aos-duration="800"
+              data-aos-delay="400"
               className="order-1 lg:order-2"
             >
               <div className="relative">
@@ -690,7 +663,7 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
@@ -704,11 +677,10 @@ export default function Home() {
         </div>
 
         <div className="container px-4 md:px-6 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
+          <div
+            data-aos="fade-up"
+            data-aos-duration="800"
+            data-aos-delay="100"
             className="max-w-3xl mx-auto text-center"
           >
             <div className="inline-block rounded-full bg-white/5 px-3 py-1 text-sm text-white/70 backdrop-blur border border-white/10 mb-4">
@@ -745,7 +717,7 @@ export default function Home() {
                 </Link>
               </Button>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 

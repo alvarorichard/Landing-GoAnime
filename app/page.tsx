@@ -397,7 +397,7 @@ export default function Home() {
                   </h3>
                   <p className="text-white/70 mb-4">{t("install.universal.description")}</p>
                   <div className="bg-black/50 rounded-lg border border-white/10 p-4 font-mono text-sm overflow-x-auto">
-                    <div className="whitespace-pre">go install github.com/alvarorichard/Goanime/cmd/goanime@latest</div>
+                    <div className="whitespace-pre">{t("terminal.universal.command")}</div>
                   </div>
                   <Button variant="link" className="mt-4 text-teal-400 hover:text-teal-300 p-0 h-auto">
                     <Link
@@ -428,9 +428,9 @@ export default function Home() {
                   </h3>
                   <p className="text-white/70 mb-4">{t("install.manual.description")}</p>
                   <div className="bg-black/50 rounded-lg border border-white/10 p-4 font-mono text-sm overflow-x-auto">
-                    <div className="whitespace-pre">git clone https://github.com/alvarorichard/GoAnime.git</div>
-                    <div className="whitespace-pre">cd GoAnime</div>
-                    <div className="whitespace-pre">sudo bash install.sh</div>
+                    <div className="whitespace-pre">{t("terminal.manual.clone")}</div>
+                    <div className="whitespace-pre">{t("terminal.manual.cd")}</div>
+                    <div className="whitespace-pre">{t("terminal.manual.install")}</div>
                   </div>
                   <Button variant="link" className="mt-4 text-teal-400 hover:text-teal-300 p-0 h-auto">
                     <Link
@@ -461,11 +461,11 @@ export default function Home() {
                   </h3>
                   <p className="text-white/70 mb-4">{t("install.arch.description")}</p>
                   <div className="bg-black/50 rounded-lg border border-white/10 p-4 font-mono text-sm overflow-x-auto">
-                    <div className="whitespace-pre"># Usando paru</div>
-                    <div className="whitespace-pre">paru -S goanime</div>
+                    <div className="whitespace-pre">{t("terminal.arch.paru")}</div>
+                    <div className="whitespace-pre">{t("terminal.arch.paru.command")}</div>
                     <div className="whitespace-pre"></div>
-                    <div className="whitespace-pre"># Usando yay</div>
-                    <div className="whitespace-pre">yay -S goanime</div>
+                    <div className="whitespace-pre">{t("terminal.arch.yay")}</div>
+                    <div className="whitespace-pre">{t("terminal.arch.yay.command")}</div>
                   </div>
                   <Button variant="link" className="mt-4 text-teal-400 hover:text-teal-300 p-0 h-auto">
                     <Link
@@ -496,8 +496,8 @@ export default function Home() {
                   </h3>
                   <p className="text-white/70 mb-4">{t("install.nixos.description")}</p>
                   <div className="bg-black/50 rounded-lg border border-white/10 p-4 font-mono text-sm overflow-x-auto">
-                    <div className="whitespace-pre"># Execução temporária</div>
-                    <div className="whitespace-pre">nix github:alvarorichard/GoAnime</div>
+                    <div className="whitespace-pre">{t("terminal.nixos.comment")}</div>
+                    <div className="whitespace-pre">{t("terminal.nixos.command")}</div>
                   </div>
                   <Button variant="link" className="mt-4 text-teal-400 hover:text-teal-300 p-0 h-auto">
                     <Link
@@ -564,7 +564,7 @@ export default function Home() {
                     <h3 className="text-lg font-bold text-white mb-1">{t("usage.step1.title")}</h3>
                     <p className="text-white/70">{t("usage.step1.description")}</p>
                     <div className="mt-2 bg-black/50 rounded-lg border border-white/10 p-3 font-mono text-sm overflow-x-auto">
-                      <code className="text-teal-400">go-anime # Linux/macOS goanime # Windows</code>
+                      <code className="text-teal-400">{t("terminal.usage.command")}</code>
                     </div>
                   </div>
                 </div>
@@ -577,7 +577,7 @@ export default function Home() {
                     <h3 className="text-lg font-bold text-white mb-1">{t("usage.step2.title")}</h3>
                     <p className="text-white/70">{t("usage.step2.description")}</p>
                     <div className="mt-2 bg-black/50 rounded-lg border border-white/10 p-3 font-mono text-sm overflow-x-auto">
-                      <code className="text-teal-400">goanime "demon slayer"</code>
+                      <code className="text-teal-400">{t("terminal.usage.search")}</code>
                     </div>
                   </div>
                 </div>
@@ -631,30 +631,30 @@ export default function Home() {
                   </div>
                   <div className="p-4 font-mono text-sm">
                     <p className="text-gray-400">
-                      $ <span className="text-white">go-anime "demon slayer"</span>
+                      $ <span className="text-white">{t("terminal.demo.command")}</span>
                     </p>
-                    <p className="mt-2 text-teal-400">Buscando "demon slayer"...</p>
+                    <p className="mt-2 text-teal-400">{t("terminal.demo.searching")}</p>
                     <p className="mt-2 text-white">
-                      Encontrado: <span className="text-purple-400">Demon Slayer: Kimetsu no Yaiba</span>
+                      {t("terminal.demo.found")} <span className="text-purple-400">{t("terminal.demo.anime")}</span>
                     </p>
-                    <p className="mt-2 text-teal-400">Carregando episódios...</p>
+                    <p className="mt-2 text-teal-400">{t("terminal.demo.loading")}</p>
                     <div className="mt-2 flex flex-col gap-1">
                       <p className="text-white">
-                        1. <span className="text-purple-400">Episódio 1 - Crueldade</span>
+                        1. <span className="text-purple-400">{t("terminal.demo.episode1")}</span>
                       </p>
                       <p className="text-white">
-                        2. <span className="text-purple-400">Episódio 2 - O Treinador Urokodaki Sakonji</span>
+                        2. <span className="text-purple-400">{t("terminal.demo.episode2")}</span>
                       </p>
                       <p className="text-white">
-                        3. <span className="text-purple-400">Episódio 3 - Sabito e Makomo</span>
+                        3. <span className="text-purple-400">{t("terminal.demo.episode3")}</span>
                       </p>
                     </div>
                     <p className="mt-2 text-gray-400">
-                      Selecione um episódio: <span className="text-white">1</span>
+                      {t("terminal.demo.select")} <span className="text-white">1</span>
                     </p>
-                    <p className="mt-2 text-teal-400">Iniciando MPV...</p>
+                    <p className="mt-2 text-teal-400">{t("terminal.demo.starting")}</p>
                     <p className="mt-2 text-white">
-                      Reproduzindo: <span className="text-purple-400">Demon Slayer - Episódio 1 - Crueldade</span>
+                      {t("terminal.demo.playing")} <span className="text-purple-400">{t("terminal.demo.playing.ep")}</span>
                     </p>
                     <div className="mt-2 flex items-center">
                       <span className="text-gray-400">$</span>

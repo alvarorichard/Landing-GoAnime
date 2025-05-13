@@ -66,6 +66,9 @@ export default function Home() {
             <Link href="#usage" className="text-sm font-medium text-white/70 hover:text-white transition-colors">
               {t("nav.usage")}
             </Link>
+            <Link href="/download" className="text-sm font-medium text-white/70 hover:text-white transition-colors">
+              {t("nav.download")}
+            </Link>
           </nav>
 
           <div className="flex items-center gap-4">
@@ -158,7 +161,7 @@ export default function Home() {
                   size="lg"
                   className="border-white/20 text-white hover:bg-white/10 h-12 px-6"
                 >
-                  <Link href="#installation">
+                  <Link href="/download" className="flex items-center">
                     <Download className="mr-2 h-5 w-5" />
                     {t("hero.install")}
                   </Link>

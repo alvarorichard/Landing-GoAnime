@@ -42,18 +42,18 @@ pnpm -v   # 8.x.x or newer
 ## Getting started
 
 1. **Clone the repository**  
-   ```bash
-   git clone https://github.com/alvarorichard/Landing-GoAnime
-    cd Landing-GoAnime
-    ```
+```bash
+git clone https://github.com/alvarorichard/Landing-GoAnime
+cd Landing-GoAnime
+```
 2. **Install dependencies**
-   ```bash
-   pnpm i # or pnpm install
-   ```
+```bash
+pnpm i # or pnpm install
+```
 3. **Start the development server**
-   ```bash
-   pnpm run dev
-   ```
+```bash
+pnpm run dev
+ ```
 
 ## Contribution guide
 

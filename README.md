@@ -2,10 +2,9 @@
 
 
 
-The GoAnime web front‑end is a lightweight, static site that showcases the **GoAnime** CLI and its features.  
-To work locally you only need a current  version of **Node.js ≥ 18.12** (20 LTS recommended) and **pnpm**.  
-Clone, `pnpm install`, and `pnpm dev`—that’s it.  
-The project welcomes PRs; we use Conventional Commits and automated checks to keep the main branch green.
+The GoAnime marketing front‑end is built with **Next.js (React framework)**  and styled with **Tailwind CSS**.  
+All tooling is managed with **pnpm** and the site compiles to static HTML you can deploy anywhere.  
+Clone, `pnpm i`, `pnpm run dev` — you’re coding in seconds! The repo follows Conventional Commits and green‑keeps the main branch with CI.
 
 
 ## Table of contents

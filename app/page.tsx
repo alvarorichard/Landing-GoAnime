@@ -200,6 +200,19 @@ export default function Home() {
         <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black to-transparent"></div>
       </section>
 
+      {/* Star on GitHub CTA */}
+      <section className="w-full flex justify-center mt-8">
+        <a
+          href="https://github.com/alvarorichard/GoAnime"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-teal-500 to-purple-600 text-white font-semibold shadow-lg hover:from-teal-600 hover:to-purple-700 transition-colors"
+        >
+          <Github className="h-5 w-5" />
+          {t("star.cta")}
+        </a>
+      </section>
+
       {/* Features Section */}
       <section id="features" ref={featuresRef} className="py-20 md:py-32 relative">
         <div className="container px-4 md:px-6 relative z-10">

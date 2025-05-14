@@ -20,6 +20,32 @@ const translations = {
     "nav.press": "Pressione",
     "nav.download": "Download",
 
+    // Terminal/Usage Instructions
+    "terminal.universal.command": "go install github.com/alvarorichard/Goanime/cmd/goanime@latest",
+    "terminal.manual.clone": "git clone https://github.com/alvarorichard/GoAnime.git",
+    "terminal.manual.cd": "cd GoAnime",
+    "terminal.manual.install": "sudo bash install.sh",
+    "terminal.arch.paru": "# Usando paru",
+    "terminal.arch.paru.command": "paru -S goanime",
+    "terminal.arch.yay": "# Usando yay",
+    "terminal.arch.yay.command": "yay -S goanime",
+    "terminal.nixos.comment": "# Execução temporária",
+    "terminal.nixos.command": "nix github:alvarorichard/GoAnime",
+    "terminal.usage.command": "go-anime # Linux/macOS goanime # Windows",
+    "terminal.usage.search": "goanime \"demon slayer\"",
+    "terminal.demo.command": "go-anime \"demon slayer\"",
+    "terminal.demo.searching": "Buscando \"demon slayer\"...",
+    "terminal.demo.found": "Encontrado:",
+    "terminal.demo.anime": "Demon Slayer: Kimetsu no Yaiba",
+    "terminal.demo.loading": "Carregando episódios...",
+    "terminal.demo.episode1": "Episódio 1 - Crueldade",
+    "terminal.demo.episode2": "Episódio 2 - O Treinador Urokodaki Sakonji",
+    "terminal.demo.episode3": "Episódio 3 - Sabito e Makomo",
+    "terminal.demo.select": "Selecione um episódio:",
+    "terminal.demo.starting": "Iniciando MPV...",
+    "terminal.demo.playing": "Reproduzindo:",
+    "terminal.demo.playing.ep": "Demon Slayer - Episódio 1 - Crueldade",
+
     // Hero
     "hero.tagline": "Anime no terminal, simples e poderoso",
     "hero.description":
@@ -153,8 +179,15 @@ const translations = {
     "download.instructions.step1.description": "Escolha a versão para seu sistema operacional e faça o download.",
     "download.instructions.step2.title": "Torne o arquivo executável (Linux/macOS)",
     "download.instructions.step2.description": "Abra o terminal e execute 'chmod +x ./nome-do-arquivo'.",
+    "download.instructions.step2.command": "chmod +x ./goanime-linux",
     "download.instructions.step3.title": "Execute o GoAnime",
     "download.instructions.step3.description": "Execute o arquivo baixado e comece a assistir anime!",
+    "download.instructions.step3.command": "./goanime-linux",
+    "download.instructions.starting": "Iniciando...",
+    "download.instructions.prompt": "Digite o nome do anime que deseja assistir:",
+
+    // Star on GitHub CTA
+    "star.cta": "Deixe uma estrela no nosso repositório no GitHub!",
   },
   en: {
     // Header
@@ -163,6 +196,32 @@ const translations = {
     "nav.usage": "How to Use",
     "nav.press": "Press",
     "nav.download": "Download",
+
+    // Terminal/Usage Instructions
+    "terminal.universal.command": "go install github.com/alvarorichard/Goanime/cmd/goanime@latest",
+    "terminal.manual.clone": "git clone https://github.com/alvarorichard/GoAnime.git",
+    "terminal.manual.cd": "cd GoAnime",
+    "terminal.manual.install": "sudo bash install.sh",
+    "terminal.arch.paru": "# Using paru",
+    "terminal.arch.paru.command": "paru -S goanime",
+    "terminal.arch.yay": "# Using yay",
+    "terminal.arch.yay.command": "yay -S goanime",
+    "terminal.nixos.comment": "# Temporary execution",
+    "terminal.nixos.command": "nix github:alvarorichard/GoAnime",
+    "terminal.usage.command": "go-anime # Linux/macOS goanime # Windows",
+    "terminal.usage.search": "goanime \"demon slayer\"",
+    "terminal.demo.command": "go-anime \"demon slayer\"",
+    "terminal.demo.searching": "Searching for \"demon slayer\"...",
+    "terminal.demo.found": "Found:",
+    "terminal.demo.anime": "Demon Slayer: Kimetsu no Yaiba",
+    "terminal.demo.loading": "Loading episodes...",
+    "terminal.demo.episode1": "Episode 1 - Cruelty",
+    "terminal.demo.episode2": "Episode 2 - Trainer Urokodaki Sakonji",
+    "terminal.demo.episode3": "Episode 3 - Sabito and Makomo",
+    "terminal.demo.select": "Select an episode:",
+    "terminal.demo.starting": "Starting MPV...",
+    "terminal.demo.playing": "Playing:",
+    "terminal.demo.playing.ep": "Demon Slayer - Episode 1 - Cruelty",
 
     // Hero
     "hero.tagline": "Anime in the terminal, simple and powerful",
@@ -293,8 +352,15 @@ const translations = {
     "download.instructions.step1.description": "Choose the version for your operating system and download it.",
     "download.instructions.step2.title": "Make the file executable (Linux/macOS)",
     "download.instructions.step2.description": "Open the terminal and run 'chmod +x ./file-name'.",
+    "download.instructions.step2.command": "chmod +x ./goanime-linux",
     "download.instructions.step3.title": "Run GoAnime",
     "download.instructions.step3.description": "Execute the downloaded file and start watching anime!",
+    "download.instructions.step3.command": "./goanime-linux",
+    "download.instructions.starting": "Starting...",
+    "download.instructions.prompt": "Type the name of the anime you want to watch:",
+
+    // Star on GitHub CTA
+    "star.cta": "Leave a star on our GitHub repository!",
   },
   es: {
     // Header
@@ -303,6 +369,32 @@ const translations = {
     "nav.usage": "Cómo Usar",
     "nav.press": "Presiona",
     "nav.download": "Descargar",
+
+    // Terminal/Usage Instructions
+    "terminal.universal.command": "go install github.com/alvarorichard/Goanime/cmd/goanime@latest",
+    "terminal.manual.clone": "git clone https://github.com/alvarorichard/GoAnime.git",
+    "terminal.manual.cd": "cd GoAnime",
+    "terminal.manual.install": "sudo bash install.sh",
+    "terminal.arch.paru": "# Usando paru",
+    "terminal.arch.paru.command": "paru -S goanime",
+    "terminal.arch.yay": "# Usando yay",
+    "terminal.arch.yay.command": "yay -S goanime",
+    "terminal.nixos.comment": "# Ejecución temporal",
+    "terminal.nixos.command": "nix github:alvarorichard/GoAnime",
+    "terminal.usage.command": "go-anime # Linux/macOS goanime # Windows",
+    "terminal.usage.search": "goanime \"demon slayer\"",
+    "terminal.demo.command": "go-anime \"demon slayer\"",
+    "terminal.demo.searching": "Buscando \"demon slayer\"...",
+    "terminal.demo.found": "Encontrado:",
+    "terminal.demo.anime": "Demon Slayer: Kimetsu no Yaiba",
+    "terminal.demo.loading": "Cargando episodios...",
+    "terminal.demo.episode1": "Episodio 1 - Crueldad",
+    "terminal.demo.episode2": "Episodio 2 - Entrenador Urokodaki Sakonji",
+    "terminal.demo.episode3": "Episodio 3 - Sabito y Makomo",
+    "terminal.demo.select": "Selecciona un episodio:",
+    "terminal.demo.starting": "Iniciando MPV...",
+    "terminal.demo.playing": "Reproduciendo:",
+    "terminal.demo.playing.ep": "Demon Slayer - Episodio 1 - Crueldad",
 
     // Hero
     "hero.tagline": "Anime en la terminal, simple y potente",
@@ -439,8 +531,15 @@ const translations = {
     "download.instructions.step1.description": "Elige la versión para tu sistema operativo y descárgala.",
     "download.instructions.step2.title": "Haz el archivo ejecutable (Linux/macOS)",
     "download.instructions.step2.description": "Abre la terminal y ejecuta 'chmod +x ./nombre-del-archivo'.",
+    "download.instructions.step2.command": "chmod +x ./goanime-linux",
     "download.instructions.step3.title": "Ejecuta GoAnime",
     "download.instructions.step3.description": "Ejecuta el archivo descargado y ¡comienza a ver anime!",
+    "download.instructions.step3.command": "./goanime-linux",
+    "download.instructions.starting": "Iniciando...",
+    "download.instructions.prompt": "Escribe el nombre del anime que deseas ver:",
+
+    // Star on GitHub CTA
+    "star.cta": "¡Deja una estrella en nuestro repositorio de GitHub!",
   },
 }
 

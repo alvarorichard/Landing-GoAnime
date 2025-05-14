@@ -443,14 +443,14 @@ export default function DownloadPage() {
                     </div>
                     <div className="p-4 font-mono text-sm">
                       <p className="text-gray-400">
-                        $ <span className="text-white">chmod +x ./goanime-linux</span>
+                        $ <span className="text-white">{t("download.instructions.step2.command")}</span>
                       </p>
                       <p className="mt-2 text-gray-400">
-                        $ <span className="text-white">./goanime-linux</span>
+                        $ <span className="text-white">{t("download.instructions.step3.command")}</span>
                       </p>
                       <p className="mt-2 text-teal-400">GoAnime v{latestRelease?.tag_name || "1.0.9"}</p>
-                      <p className="mt-1 text-teal-400">Iniciando...</p>
-                      <p className="mt-2 text-white">Digite o nome do anime que deseja assistir:</p>
+                      <p className="mt-1 text-teal-400">{t("download.instructions.starting")}</p>
+                      <p className="mt-2 text-white">{t("download.instructions.prompt")}</p>
                       <div className="mt-2 flex items-center">
                         <span className="text-gray-400">$</span>
                         <span className="ml-2 h-4 w-2 bg-white/70 animate-pulse"></span>

@@ -61,7 +61,7 @@ Fork the repository and create a branch:
 git checkout -b feat/amazing‑idea.
 ```
 
-If you’re unsure, open a draft PR or start a discussion—we’d love to help.
+If you’re unsure, open a draft PR or start a discussion we’d love to help.
 
 
 

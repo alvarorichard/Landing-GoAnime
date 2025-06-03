@@ -24,7 +24,7 @@ const translations = {
     "terminal.universal.command": "go install github.com/alvarorichard/Goanime/cmd/goanime@latest",
     "terminal.manual.clone": "git clone https://github.com/alvarorichard/GoAnime.git",
     "terminal.manual.cd": "cd GoAnime",
-    "terminal.manual.install": "sudo bash install.sh",
+    "terminal.manual.install": "go run cmd/goanime/main.go",
     "terminal.arch.paru": "# Usando paru",
     "terminal.arch.paru.command": "paru -S goanime",
     "terminal.arch.yay": "# Usando yay",
@@ -89,7 +89,7 @@ const translations = {
     "install.universal.title": "Instalação Universal",
     "install.universal.description": "Recomendado para a maioria dos usuários (apenas Go necessário)",
 
-    "install.manual.title": "Instalação Manual",
+    "install.manual.title": "Manual install methods",
     "install.manual.description": "Clone o repositório e instale manualmente",
 
     "install.arch.title": "Arch Linux (AUR)",
@@ -201,7 +201,7 @@ const translations = {
     "terminal.universal.command": "go install github.com/alvarorichard/Goanime/cmd/goanime@latest",
     "terminal.manual.clone": "git clone https://github.com/alvarorichard/GoAnime.git",
     "terminal.manual.cd": "cd GoAnime",
-    "terminal.manual.install": "sudo bash install.sh",
+    "terminal.manual.install": "go run cmd/goanime/main.go",
     "terminal.arch.paru": "# Using paru",
     "terminal.arch.paru.command": "paru -S goanime",
     "terminal.arch.yay": "# Using yay",
@@ -264,7 +264,7 @@ const translations = {
     "install.universal.title": "Universal Installation",
     "install.universal.description": "Recommended for most users (only Go required)",
 
-    "install.manual.title": "Manual Installation",
+    "install.manual.title": "Manual install methods",
     "install.manual.description": "Clone the repository and install manually",
 
     "install.arch.title": "Arch Linux (AUR)",
@@ -374,7 +374,7 @@ const translations = {
     "terminal.universal.command": "go install github.com/alvarorichard/Goanime/cmd/goanime@latest",
     "terminal.manual.clone": "git clone https://github.com/alvarorichard/GoAnime.git",
     "terminal.manual.cd": "cd GoAnime",
-    "terminal.manual.install": "sudo bash install.sh",
+    "terminal.manual.install": "go run cmd/goanime/main.go",
     "terminal.arch.paru": "# Usando paru",
     "terminal.arch.paru.command": "paru -S goanime",
     "terminal.arch.yay": "# Usando yay",
@@ -440,7 +440,7 @@ const translations = {
     "install.universal.title": "Instalación Universal",
     "install.universal.description": "Recomendado para la mayoría de los usuarios (solo se requiere Go)",
 
-    "install.manual.title": "Instalación Manual",
+    "install.manual.title": "Manual install methods",
     "install.manual.description": "Clona el repositorio e instala manualmente",
 
     "install.arch.title": "Arch Linux (AUR)",

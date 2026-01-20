@@ -185,6 +185,21 @@ const translations = {
     "download.instructions.step3.command": "./goanime-linux",
     "download.instructions.starting": "Iniciando...",
     "download.instructions.prompt": "Digite o nome do anime que deseja assistir:",
+    "download.instructions.extract": "Extrair o arquivo",
+    "download.instructions.install": "Mover para o PATH do sistema",
+    "download.instructions.step4.title": "Pronto!",
+    "download.instructions.step4.description": "O GoAnime está instalado e pronto para usar. Execute 'goanime' em qualquer terminal.",
+
+    // New download page keys
+    "download.prerelease": "Pré-lançamento",
+    "download.architecture": "Arquitetura",
+    "download.size": "Tamanho",
+    "download.verify": "Verifique seu download:",
+    "download.windows.installer.included": "Instalador com MPV incluído",
+    "download.windows.portable": "Baixar versão portátil (.zip)",
+    "download.aur.title": "Arch Linux (AUR)",
+    "download.aur.description": "Instale diretamente do Arch User Repository usando seu helper AUR favorito.",
+    "download.aur.alternative": "Ou usando paru:",
 
     // Star on GitHub CTA
     "star.cta": "Deixe uma estrela no nosso repositório no GitHub!",
@@ -358,6 +373,21 @@ const translations = {
     "download.instructions.step3.command": "./goanime-linux",
     "download.instructions.starting": "Starting...",
     "download.instructions.prompt": "Type the name of the anime you want to watch:",
+    "download.instructions.extract": "Extract the file",
+    "download.instructions.install": "Move to system PATH",
+    "download.instructions.step4.title": "Done!",
+    "download.instructions.step4.description": "GoAnime is installed and ready to use. Run 'goanime' in any terminal.",
+
+    // New download page keys
+    "download.prerelease": "Pre-release",
+    "download.architecture": "Architecture",
+    "download.size": "Size",
+    "download.verify": "Verify your download:",
+    "download.windows.installer.included": "Installer with MPV included",
+    "download.windows.portable": "Download portable version (.zip)",
+    "download.aur.title": "Arch Linux (AUR)",
+    "download.aur.description": "Install directly from the Arch User Repository using your favorite AUR helper.",
+    "download.aur.alternative": "Or using paru:",
 
     // Star on GitHub CTA
     "star.cta": "Leave a star on our GitHub repository!",
@@ -537,6 +567,21 @@ const translations = {
     "download.instructions.step3.command": "./goanime-linux",
     "download.instructions.starting": "Iniciando...",
     "download.instructions.prompt": "Escribe el nombre del anime que deseas ver:",
+    "download.instructions.extract": "Extraer el archivo",
+    "download.instructions.install": "Mover al PATH del sistema",
+    "download.instructions.step4.title": "¡Listo!",
+    "download.instructions.step4.description": "GoAnime está instalado y listo para usar. Ejecuta 'goanime' en cualquier terminal.",
+
+    // New download page keys
+    "download.prerelease": "Pre-lanzamiento",
+    "download.architecture": "Arquitectura",
+    "download.size": "Tamaño",
+    "download.verify": "Verifica tu descarga:",
+    "download.windows.installer.included": "Instalador con MPV incluido",
+    "download.windows.portable": "Descargar versión portátil (.zip)",
+    "download.aur.title": "Arch Linux (AUR)",
+    "download.aur.description": "Instala directamente desde el Arch User Repository usando tu helper AUR favorito.",
+    "download.aur.alternative": "O usando paru:",
 
     // Star on GitHub CTA
     "star.cta": "¡Deja una estrella en nuestro repositorio de GitHub!",

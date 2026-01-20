@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState, useRef, useMemo } from "react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import {
@@ -15,22 +15,51 @@ import {
   Terminal,
   Command,
   Sparkles,
+  Shield,
+  Package,
+  Cpu,
+  AlertTriangle,
+  CheckCircle,
+  ExternalLink,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import ParticleBackground from "@/components/particle-background"
 import { useLanguage } from "@/contexts/language-context"
 import { LanguageSwitcher } from "@/components/language-switcher"
 import { CommandMenu } from "@/components/command-menu"
 import Image from "next/image"
 
+interface GitHubAsset {
+  name: string
+  browser_download_url: string
+  size: number
+}
+
 interface GitHubRelease {
   tag_name: string
   html_url: string
-  assets: Array<{
-    name: string
-    browser_download_url: string
-  }>
+  prerelease: boolean
+  published_at: string
+  body: string
+  assets: GitHubAsset[]
+}
+
+type Platform = "darwin" | "linux" | "windows"
+type Architecture = "amd64" | "arm64"
+
+interface DownloadOption {
+  platform: Platform
+  arch: Architecture
+  binaryName: string
+  archiveName: string | null
+  installerName?: string
+  downloadUrl: string
+  archiveUrl: string | null
+  installerUrl?: string
+  size: number
+  installerSize: number
 }
 
 export default function DownloadPage() {
@@ -39,6 +68,35 @@ export default function DownloadPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [showCommand, setShowCommand] = useState(false)
+  const [selectedArch, setSelectedArch] = useState<Record<Platform, Architecture>>({
+    darwin: "arm64",
+    linux: "amd64",
+    windows: "amd64",
+  })
+
+  // Detect user's platform and architecture
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const userAgent = navigator.userAgent.toLowerCase()
+      const platform = navigator.platform.toLowerCase()
+
+      let detectedArch: Architecture = "amd64"
+
+      if (platform.includes("mac") || userAgent.includes("mac")) {
+        if (userAgent.includes("arm")) {
+          detectedArch = "arm64"
+        }
+        setSelectedArch((prev) => ({ ...prev, darwin: detectedArch }))
+      }
+
+      if (platform.includes("linux") || userAgent.includes("linux")) {
+        if (userAgent.includes("aarch64") || userAgent.includes("arm64")) {
+          detectedArch = "arm64"
+        }
+        setSelectedArch((prev) => ({ ...prev, linux: detectedArch }))
+      }
+    }
+  }, [])
 
   useEffect(() => {
     async function fetchLatestRelease() {
@@ -47,7 +105,7 @@ export default function DownloadPage() {
         const response = await fetch("https://api.github.com/repos/alvarorichard/GoAnime/releases/latest")
 
         if (!response.ok) {
-          throw new Error(`GitHub API error: ${response.status}`)
+          throw new Error("GitHub API error: " + response.status)
         }
 
         const data = await response.json()
@@ -76,35 +134,94 @@ export default function DownloadPage() {
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [])
 
-  // Function to get download URL for specific platform
-  const getDownloadUrl = (platform: "mac" | "linux" | "windows") => {
-    if (!latestRelease) return "#"
-
-    const fileMap = {
-      mac: "goanime-apple-darwin",
-      linux: "goanime-linux",
-      windows: "GoAnimeInstaller.exe",
+  // Parse download options from release assets
+  const downloadOptions = useMemo((): Record<Platform, DownloadOption[]> => {
+    if (!latestRelease) {
+      return { darwin: [], linux: [], windows: [] }
     }
 
-    const fileName = fileMap[platform]
-    const asset = latestRelease.assets.find((asset) => asset.name === fileName)
-
-    // If we can't find the exact asset, construct URL based on pattern
-    if (!asset) {
-      return `https://github.com/alvarorichard/GoAnime/releases/download/${latestRelease.tag_name}/${fileName}`
+    const options: Record<Platform, DownloadOption[]> = {
+      darwin: [],
+      linux: [],
+      windows: [],
     }
 
-    return asset.browser_download_url
+    const platforms: Platform[] = ["darwin", "linux", "windows"]
+    const architectures: Architecture[] = ["amd64", "arm64"]
+
+    for (const platform of platforms) {
+      for (const arch of architectures) {
+        // Windows only has amd64 currently
+        if (platform === "windows" && arch === "arm64") continue
+
+        // Binary names: goanime-{platform}-{arch} (no .exe for Windows standalone)
+        const binaryName = "goanime-" + platform + "-" + arch
+        
+        // Archive names: .tar.gz for Unix, .zip for Windows
+        const archiveName = platform === "windows" 
+          ? "goanime-" + platform + "-" + arch + ".zip" 
+          : "goanime-" + platform + "-" + arch + ".tar.gz"
+
+        const binaryAsset = latestRelease.assets.find((a) => a.name === binaryName)
+        const archiveAsset = latestRelease.assets.find((a) => a.name === archiveName)
+
+        // Windows installer: GoAnime-Installer-{version}.exe
+        let installerAsset: GitHubAsset | undefined
+        let installerName: string | undefined
+        if (platform === "windows") {
+          installerAsset = latestRelease.assets.find((a) => 
+            a.name.startsWith("GoAnime-Installer-") && a.name.endsWith(".exe")
+          )
+          installerName = installerAsset?.name
+        }
+
+        // Add option if we have any downloadable asset (binary, archive, or installer)
+        if (binaryAsset || archiveAsset || installerAsset) {
+          options[platform].push({
+            platform,
+            arch,
+            binaryName,
+            archiveName: archiveAsset ? archiveName : null,
+            installerName,
+            downloadUrl: binaryAsset?.browser_download_url ||
+              "https://github.com/alvarorichard/GoAnime/releases/download/" + latestRelease.tag_name + "/" + binaryName,
+            archiveUrl: archiveAsset?.browser_download_url || null,
+            installerUrl: installerAsset?.browser_download_url,
+            size: archiveAsset?.size || binaryAsset?.size || 0,
+            installerSize: installerAsset?.size || 0,
+          })
+        }
+      }
+    }
+
+    return options
+  }, [latestRelease])
+
+  const checksumsUrl = useMemo(() => {
+    if (!latestRelease) return null
+    const checksumAsset = latestRelease.assets.find((a) => a.name === "checksums-sha256.txt")
+    return checksumAsset?.browser_download_url || null
+  }, [latestRelease])
+
+  const getDownloadOption = (platform: Platform): DownloadOption | null => {
+    const arch = selectedArch[platform]
+    return downloadOptions[platform].find((opt) => opt.arch === arch) || downloadOptions[platform][0] || null
   }
+
+  const formatSize = (bytes: number): string => {
+    if (bytes === 0) return ""
+    const mb = bytes / (1024 * 1024)
+    return mb.toFixed(1) + " MB"
+  }
+
+  const isPrerelease = latestRelease?.prerelease || (latestRelease?.tag_name?.includes("-") ?? false)
 
   return (
     <div className="min-h-screen bg-black text-white overflow-hidden">
       <ParticleBackground />
 
-      {/* Command Menu */}
       <AnimatePresence>{showCommand && <CommandMenu onClose={() => setShowCommand(false)} />}</AnimatePresence>
 
-      {/* Header */}
       <header className="fixed top-0 z-50 w-full border-b border-white/10 bg-black/50 backdrop-blur-xl">
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-2">
@@ -123,10 +240,7 @@ export default function DownloadPage() {
             <Link href="/#features" className="text-sm font-medium text-white/70 hover:text-white transition-colors">
               {t("nav.features")}
             </Link>
-            <Link
-              href="/#installation"
-              className="text-sm font-medium text-white/70 hover:text-white transition-colors"
-            >
+            <Link href="/#installation" className="text-sm font-medium text-white/70 hover:text-white transition-colors">
               {t("nav.installation")}
             </Link>
             <Link href="/#usage" className="text-sm font-medium text-white/70 hover:text-white transition-colors">
@@ -166,9 +280,7 @@ export default function DownloadPage() {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="pt-16 pb-20">
-        {/* Hero Section */}
         <section className="relative mb-20 overflow-hidden py-16">
           <div className="absolute inset-0 z-0">
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-black"></div>
@@ -213,10 +325,18 @@ export default function DownloadPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.3 }}
-                    className="flex items-center gap-2 bg-white/10 rounded-full px-4 py-2 text-sm backdrop-blur border border-white/10"
+                    className="flex items-center gap-3"
                   >
-                    <span>{t("download.version")}</span>
-                    <span className="font-mono text-teal-400 font-bold">{latestRelease.tag_name}</span>
+                    <div className="flex items-center gap-2 bg-white/10 rounded-full px-4 py-2 text-sm backdrop-blur border border-white/10">
+                      <span>{t("download.version")}</span>
+                      <span className="font-mono text-teal-400 font-bold">{latestRelease.tag_name}</span>
+                    </div>
+                    {isPrerelease && (
+                      <Badge variant="outline" className="border-yellow-500/50 text-yellow-400 bg-yellow-500/10">
+                        <AlertTriangle className="h-3 w-3 mr-1" />
+                        {t("download.prerelease")}
+                      </Badge>
+                    )}
                   </motion.div>
                 )}
               </div>
@@ -250,7 +370,6 @@ export default function DownloadPage() {
           </div>
         </section>
 
-        {/* Download Options Section */}
         <section className="container px-4 md:px-6 relative z-10 mb-20">
           <div className="max-w-6xl mx-auto">
             {loading ? (
@@ -283,13 +402,17 @@ export default function DownloadPage() {
               <>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   <DownloadCard
-                    platform="mac"
+                    platform="darwin"
                     icon={<Apple className="h-10 w-10 text-white" />}
                     title={t("download.mac.title")}
                     description={t("download.mac.description")}
-                    downloadUrl={getDownloadUrl("mac")}
+                    option={getDownloadOption("darwin")}
+                    availableArchitectures={downloadOptions.darwin.map((o) => o.arch)}
+                    selectedArch={selectedArch.darwin}
+                    onArchChange={(arch) => setSelectedArch((prev) => ({ ...prev, darwin: arch }))}
                     buttonText={t("download.mac.button")}
                     version={latestRelease?.tag_name || ""}
+                    formatSize={formatSize}
                   />
 
                   <DownloadCard
@@ -297,9 +420,13 @@ export default function DownloadPage() {
                     icon={<Linux className="h-10 w-10 text-white" />}
                     title={t("download.linux.title")}
                     description={t("download.linux.description")}
-                    downloadUrl={getDownloadUrl("linux")}
+                    option={getDownloadOption("linux")}
+                    availableArchitectures={downloadOptions.linux.map((o) => o.arch)}
+                    selectedArch={selectedArch.linux}
+                    onArchChange={(arch) => setSelectedArch((prev) => ({ ...prev, linux: arch }))}
                     buttonText={t("download.linux.button")}
                     version={latestRelease?.tag_name || ""}
+                    formatSize={formatSize}
                   />
 
                   <DownloadCard
@@ -307,11 +434,40 @@ export default function DownloadPage() {
                     icon={<Windows className="h-10 w-10 text-white" />}
                     title={t("download.windows.title")}
                     description={t("download.windows.description")}
-                    downloadUrl={getDownloadUrl("windows")}
+                    option={getDownloadOption("windows")}
+                    availableArchitectures={downloadOptions.windows.map((o) => o.arch)}
+                    selectedArch={selectedArch.windows}
+                    onArchChange={(arch) => setSelectedArch((prev) => ({ ...prev, windows: arch }))}
                     buttonText={t("download.windows.button")}
                     version={latestRelease?.tag_name || ""}
+                    formatSize={formatSize}
                   />
                 </div>
+
+                {checksumsUrl && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                    className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4"
+                  >
+                    <div className="flex items-center gap-2 text-white/50 text-sm">
+                      <Shield className="h-4 w-4 text-teal-400" />
+                      <span>{t("download.verify")}</span>
+                    </div>
+                    <Button
+                      asChild
+                      variant="outline"
+                      size="sm"
+                      className="border-white/20 text-white/70 hover:text-white hover:border-white/50"
+                    >
+                      <Link href={checksumsUrl} target="_blank" rel="noopener noreferrer">
+                        <Download className="mr-2 h-4 w-4" />
+                        checksums-sha256.txt
+                      </Link>
+                    </Button>
+                  </motion.div>
+                )}
 
                 <div className="mt-8 text-center">
                   <p className="text-white/50 text-sm max-w-lg mx-auto">{t("download.instructions")}</p>
@@ -321,7 +477,34 @@ export default function DownloadPage() {
           </div>
         </section>
 
-        {/* Alternative Methods Section */}
+        <section className="container px-4 md:px-6 relative z-10 mb-20">
+          <div className="max-w-4xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="bg-gradient-to-br from-gray-900 to-black border border-white/10 rounded-xl p-6 md:p-8"
+            >
+              <div className="flex items-start gap-4">
+                <div className="rounded-full w-12 h-12 flex items-center justify-center bg-gradient-to-br from-blue-500 to-cyan-600 flex-shrink-0">
+                  <Package className="h-6 w-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-white mb-2">{t("download.aur.title")}</h3>
+                  <p className="text-white/70 mb-4">{t("download.aur.description")}</p>
+                  <div className="bg-black/50 rounded-lg p-4 border border-white/10">
+                    <code className="text-teal-400 font-mono text-sm">yay -S goanime</code>
+                  </div>
+                  <p className="text-white/50 text-sm mt-3">{t("download.aur.alternative")}</p>
+                  <div className="bg-black/50 rounded-lg p-4 border border-white/10 mt-2">
+                    <code className="text-teal-400 font-mono text-sm">paru -S goanime</code>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
         <section className="container px-4 md:px-6 relative z-10">
           <div className="max-w-4xl mx-auto">
             <motion.div
@@ -404,7 +587,6 @@ export default function DownloadPage() {
           </div>
         </section>
 
-        {/* Installation Instructions Section */}
         <section className="container px-4 md:px-6 relative z-10 py-20">
           <div className="max-w-4xl mx-auto">
             <motion.div
@@ -443,14 +625,28 @@ export default function DownloadPage() {
                     </div>
                     <div className="p-4 font-mono text-sm">
                       <p className="text-gray-400">
-                        $ <span className="text-white">{t("download.instructions.step2.command")}</span>
+                        <span className="text-purple-400">#</span> {t("download.instructions.extract")}
                       </p>
                       <p className="mt-2 text-gray-400">
-                        $ <span className="text-white">{t("download.instructions.step3.command")}</span>
+                        $ <span className="text-white">tar -xzf goanime-linux-amd64.tar.gz</span>
                       </p>
-                      <p className="mt-2 text-teal-400">GoAnime v{latestRelease?.tag_name || "1.0.9"}</p>
+                      <p className="mt-4 text-gray-400">
+                        <span className="text-purple-400">#</span> {t("download.instructions.step2.command")}
+                      </p>
+                      <p className="mt-2 text-gray-400">
+                        $ <span className="text-white">chmod +x goanime-linux-amd64</span>
+                      </p>
+                      <p className="mt-4 text-gray-400">
+                        <span className="text-purple-400">#</span> {t("download.instructions.install")}
+                      </p>
+                      <p className="mt-2 text-gray-400">
+                        $ <span className="text-white">sudo mv goanime-linux-amd64 /usr/local/bin/goanime</span>
+                      </p>
+                      <p className="mt-4 text-gray-400">
+                        $ <span className="text-white">goanime</span>
+                      </p>
+                      <p className="mt-2 text-teal-400">GoAnime {latestRelease?.tag_name || "v1.6.2"}</p>
                       <p className="mt-1 text-teal-400">{t("download.instructions.starting")}</p>
-                      <p className="mt-2 text-white">{t("download.instructions.prompt")}</p>
                       <div className="mt-2 flex items-center">
                         <span className="text-gray-400">$</span>
                         <span className="ml-2 h-4 w-2 bg-white/70 animate-pulse"></span>
@@ -496,6 +692,16 @@ export default function DownloadPage() {
                       <p className="text-white/70">{t("download.instructions.step3.description")}</p>
                     </div>
                   </div>
+
+                  <div className="flex gap-4">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center text-white">
+                      <CheckCircle className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-white mb-1">{t("download.instructions.step4.title")}</h3>
+                      <p className="text-white/70">{t("download.instructions.step4.description")}</p>
+                    </div>
+                  </div>
                 </div>
               </motion.div>
             </div>
@@ -503,7 +709,6 @@ export default function DownloadPage() {
         </section>
       </main>
 
-      {/* Footer */}
       <footer className="border-t border-white/10 py-8 relative z-10">
         <div className="container px-4 md:px-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
@@ -545,34 +750,63 @@ export default function DownloadPage() {
 }
 
 interface DownloadCardProps {
-  platform: "mac" | "linux" | "windows"
+  platform: Platform
   icon: React.ReactNode
   title: string
   description: string
-  downloadUrl: string
+  option: DownloadOption | null
+  availableArchitectures: Architecture[]
+  selectedArch: Architecture
+  onArchChange: (arch: Architecture) => void
   buttonText: string
   version: string
+  formatSize: (bytes: number) => string
 }
 
-function DownloadCard({ platform, icon, title, description, downloadUrl, buttonText, version }: DownloadCardProps) {
+function DownloadCard({
+  platform,
+  icon,
+  title,
+  description,
+  option,
+  availableArchitectures,
+  selectedArch,
+  onArchChange,
+  buttonText,
+  version,
+  formatSize,
+}: DownloadCardProps) {
   const { t } = useLanguage()
   const cardRef = useRef<HTMLDivElement>(null)
   const [isHovered, setIsHovered] = useState(false)
+
+  const archLabels: Record<Architecture, string> = {
+    amd64: "x86_64 (Intel/AMD)",
+    arm64: platform === "darwin" ? "ARM64 (Apple Silicon)" : "ARM64",
+  }
+
+  const primaryDownloadUrl =
+    platform === "windows" && option?.installerUrl
+      ? option.installerUrl
+      : option?.archiveUrl || option?.downloadUrl || "#"
+
+  const primaryFileName =
+    platform === "windows" && option?.installerName
+      ? option.installerName
+      : option?.archiveName || option?.binaryName || ""
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: platform === "mac" ? 0.1 : platform === "linux" ? 0.2 : 0.3 }}
+      transition={{ duration: 0.5, delay: platform === "darwin" ? 0.1 : platform === "linux" ? 0.2 : 0.3 }}
       ref={cardRef}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className="relative"
     >
       <motion.div
-        animate={{
-          y: isHovered ? -10 : 0,
-        }}
+        animate={{ y: isHovered ? -10 : 0 }}
         transition={{ duration: 0.3 }}
         className="relative w-full h-full"
       >
@@ -585,34 +819,82 @@ function DownloadCard({ platform, icon, title, description, downloadUrl, buttonT
 
             <h3 className="text-2xl font-bold mb-2 text-white group-hover:text-teal-400 transition-colors">{title}</h3>
 
-            <p className="text-white/70 mb-2 flex-grow">{description}</p>
+            <p className="text-white/70 mb-4 flex-grow">{description}</p>
 
-            <div className="mb-6 bg-black/30 rounded-lg p-3 border border-white/10">
+            {availableArchitectures.length > 1 && (
+              <div className="mb-4">
+                <label className="text-white/50 text-sm mb-2 block flex items-center gap-1">
+                  <Cpu className="h-3 w-3" />
+                  {t("download.architecture")}
+                </label>
+                <div className="flex gap-2">
+                  {availableArchitectures.map((arch) => (
+                    <button
+                      key={arch}
+                      onClick={() => onArchChange(arch)}
+                      className={
+                        "px-3 py-1.5 text-xs font-mono rounded-md border transition-all " +
+                        (selectedArch === arch
+                          ? "bg-teal-500/20 border-teal-500 text-teal-400"
+                          : "bg-white/5 border-white/10 text-white/70 hover:border-white/30")
+                      }
+                    >
+                      {archLabels[arch]}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="mb-4 bg-black/30 rounded-lg p-3 border border-white/10">
               <div className="flex items-center justify-between">
                 <span className="text-white/50 text-sm">{t("download.file")}:</span>
-                <span className="text-white/80 text-sm font-mono">
-                  {platform === "mac"
-                    ? "goanime-apple-darwin"
-                    : platform === "linux"
-                      ? "goanime-linux"
-                      : "GoAnimeInstaller.exe"}
-                </span>
+                <span className="text-white/80 text-xs font-mono truncate max-w-[180px]">{primaryFileName}</span>
               </div>
               <div className="flex items-center justify-between mt-1">
                 <span className="text-white/50 text-sm">{t("download.version")}:</span>
                 <span className="text-teal-400 text-sm font-mono">{version}</span>
               </div>
+              {(platform === "windows" && option?.installerSize ? option.installerSize : option?.size) ? (
+                <div className="flex items-center justify-between mt-1">
+                  <span className="text-white/50 text-sm">{t("download.size")}:</span>
+                  <span className="text-white/80 text-sm">
+                    {formatSize(platform === "windows" && option?.installerSize ? option.installerSize : option?.size || 0)}
+                  </span>
+                </div>
+              ) : null}
             </div>
+
+            {platform === "windows" && option?.installerUrl && (
+              <div className="mb-4 flex items-center gap-2 text-xs text-teal-400">
+                <CheckCircle className="h-3 w-3" />
+                <span>{t("download.windows.installer.included")}</span>
+              </div>
+            )}
 
             <Button
               asChild
               className="bg-gradient-to-r from-teal-500 to-purple-600 hover:from-teal-600 hover:to-purple-700 border-0 w-full h-12 text-base"
             >
-              <Link href={downloadUrl} download>
+              <Link href={primaryDownloadUrl}>
                 <Download className="mr-2 h-5 w-5" />
                 {buttonText}
               </Link>
             </Button>
+
+            {platform === "windows" && option?.archiveUrl && (
+              <Button
+                asChild
+                variant="ghost"
+                size="sm"
+                className="mt-2 text-white/50 hover:text-white/80"
+              >
+                <Link href={option.archiveUrl}>
+                  <ExternalLink className="mr-2 h-3 w-3" />
+                  {t("download.windows.portable")}
+                </Link>
+              </Button>
+            )}
           </CardContent>
         </Card>
       </motion.div>

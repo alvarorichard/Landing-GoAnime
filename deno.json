@@ -1,0 +1,7 @@
+{
+  "nodeModules": "auto",
+  "allowScripts": {
+    "allow": [],
+    "deny": ["npm:sharp@0.34.5"]
+  }
+}

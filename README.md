@@ -37,9 +37,15 @@ pnpm build
 | `app/opengraph-image.tsx` | Link preview image, rendered at build time |
 | `contexts/language-context.tsx` | All text, in Portuguese, English and Spanish |
 | `lib/releases.ts` | Picks the right files out of a GoAnime release |
-| `components/` | Header, footer, install tabs, code blocks |
+| `components/motion.tsx` | Reveal, stagger, count-up and spotlight animations |
+| `components/` | Hero, header, footer, install tabs, code blocks, OS icons |
 | `public/brand/` | The GoAnime mark |
 | `public/demo/` | The demo video and its poster |
+
+Animations use framer-motion for anything driven by scroll, pointer or
+layout, and CSS (`app/globals.css`) for ambient loops. Both stop for visitors
+who ask the system for reduced motion, and none of them re-render React on
+pointer movement or scroll.
 
 Text is never written inline: add the key to the Portuguese dictionary in
 `contexts/language-context.tsx` first, and TypeScript will then require the

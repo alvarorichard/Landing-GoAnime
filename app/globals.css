@@ -55,8 +55,150 @@
   }
 }
 
+/*
+ * Ambient motion. Everything here animates transform or opacity only (the
+ * border beam animates a registered custom property), and all of it stops for
+ * visitors who ask the system for reduced motion.
+ */
+@layer utilities {
+  /* Faint grid behind the hero, faded out toward the edges. */
+  .bg-grid {
+    background-image: linear-gradient(to right, hsl(var(--foreground) / 0.045) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--foreground) / 0.045) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 70% 60% at 60% 40%, #000 30%, transparent 75%);
+  }
+
+  /* Slow crimson aurora. Soft-edged radial gradients instead of filter: blur,
+     which is far cheaper to animate on phones. */
+  .aurora-blob {
+    position: absolute;
+    border-radius: 9999px;
+    will-change: transform;
+    animation: aurora-drift var(--aurora-duration, 22s) ease-in-out infinite alternate;
+  }
+
+  /* Pointer-following highlight for cards; the element sets --x and --y. */
+  .spotlight {
+    position: relative;
+    isolation: isolate;
+  }
+  .spotlight::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: radial-gradient(
+      420px circle at var(--x, 50%) var(--y, 50%),
+      hsl(var(--primary) / 0.14),
+      transparent 45%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+  .spotlight:hover::after {
+    opacity: 1;
+  }
+
+  /* A light sweep across the primary button on hover. */
+  .btn-shine {
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-shine::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    width: 45%;
+    background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.28), transparent);
+    transform: translateX(-130%) skewX(-20deg);
+    pointer-events: none;
+  }
+  .btn-shine:hover::after {
+    animation: shine 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* A beam of light travelling around the border, for the highlighted card. */
+  .border-beam {
+    position: relative;
+    isolation: isolate;
+  }
+  .border-beam::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: conic-gradient(
+      from var(--beam-angle),
+      transparent 0deg 250deg,
+      hsl(var(--brand)) 320deg,
+      transparent 360deg
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: beam-spin 5s linear infinite;
+    pointer-events: none;
+  }
+
+  .animate-glow {
+    animation: glow-pulse 6s ease-in-out infinite;
+  }
+}
+
+@property --beam-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes aurora-drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(var(--aurora-x, 8%), var(--aurora-y, -6%), 0) scale(1.12);
+  }
+  100% {
+    transform: translate3d(calc(var(--aurora-x, 8%) * -0.6), calc(var(--aurora-y, -6%) * -0.8), 0) scale(0.94);
+  }
+}
+
+@keyframes shine {
+  to {
+    transform: translateX(260%) skewX(-20deg);
+  }
+}
+
+@keyframes beam-spin {
+  to {
+    --beam-angle: 360deg;
+  }
+}
+
+@keyframes glow-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+  .aurora-blob,
+  .border-beam::before,
+  .btn-shine:hover::after,
+  .animate-glow {
+    animation: none !important;
   }
 }

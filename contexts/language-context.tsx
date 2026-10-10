@@ -26,6 +26,8 @@ const pt = {
   "nav.home": "Início do GoAnime",
   "nav.label": "Navegação principal",
   "nav.skip": "Pular para o conteúdo",
+  "nav.menu.open": "Abrir menu",
+  "nav.menu.close": "Fechar menu",
 
   "hero.eyebrow": "Código aberto · Linux, macOS e Windows",
   "hero.title": "Assista anime direto do terminal.",
@@ -174,6 +176,8 @@ const en: Dictionary = {
   "nav.home": "GoAnime home",
   "nav.label": "Main navigation",
   "nav.skip": "Skip to content",
+  "nav.menu.open": "Open menu",
+  "nav.menu.close": "Close menu",
 
   "hero.eyebrow": "Open source · Linux, macOS and Windows",
   "hero.title": "Watch anime from your terminal.",
@@ -317,6 +321,8 @@ const es: Dictionary = {
   "nav.home": "Inicio de GoAnime",
   "nav.label": "Navegación principal",
   "nav.skip": "Saltar al contenido",
+  "nav.menu.open": "Abrir menú",
+  "nav.menu.close": "Cerrar menú",
 
   "hero.eyebrow": "Código abierto · Linux, macOS y Windows",
   "hero.title": "Mira anime desde tu terminal.",

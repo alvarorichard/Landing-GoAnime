@@ -2,7 +2,7 @@ import type React from "react"
 import type { Metadata, Viewport } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import "@/app/globals.css"
-import { LanguageProviderWrapper } from "@/components/language-provider-wrapper"
+import { Providers } from "@/components/providers"
 import { SITE_URL } from "@/lib/links"
 
 const sans = Geist({ subsets: ["latin"], variable: "--font-sans", display: "swap" })
@@ -40,7 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt-BR" className={`${sans.variable} ${mono.variable}`}>
       <body className="min-h-dvh font-sans">
-        <LanguageProviderWrapper>{children}</LanguageProviderWrapper>
+        <Providers>{children}</Providers>
       </body>
     </html>
   )

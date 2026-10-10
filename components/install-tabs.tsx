@@ -2,9 +2,11 @@
 
 import { useRef, useState, type KeyboardEvent } from "react"
 import Link from "next/link"
+import { AnimatePresence, motion } from "framer-motion"
 import { Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { CodeBlock } from "@/components/code-block"
+import { EASE } from "@/components/motion"
 import { useLanguage } from "@/contexts/language-context"
 import { usePlatform } from "@/hooks/use-platform"
 import { LATEST_RELEASE_URL } from "@/lib/releases"
@@ -65,7 +67,7 @@ export function InstallTabs() {
         role="tablist"
         aria-label={t("install.tabs")}
         onKeyDown={onKeyDown}
-        className="flex gap-1 overflow-x-auto rounded-lg border border-border bg-card/60 p-1"
+        className="relative isolate flex gap-1 overflow-x-auto rounded-lg border border-border bg-card/60 p-1"
       >
         {TABS.map((tab) => {
           const selected = tab.id === active
@@ -83,65 +85,80 @@ export function InstallTabs() {
               tabIndex={selected ? 0 : -1}
               onClick={() => setPicked(tab.id)}
               className={cn(
-                "shrink-0 rounded-md px-3.5 py-2 text-sm transition-colors",
-                selected ? "bg-secondary text-foreground" : "text-muted-foreground hover:text-foreground",
+                "relative shrink-0 rounded-md px-3.5 py-2.5 text-sm transition-colors md:py-2",
+                selected ? "text-foreground" : "text-muted-foreground hover:text-foreground",
               )}
             >
+              {/* The highlight slides between tabs instead of jumping. */}
+              {selected && (
+                <motion.span
+                  layoutId="install-tab-pill"
+                  className="absolute inset-0 -z-10 rounded-md bg-secondary"
+                  transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                />
+              )}
               {tab.label}
             </button>
           )
         })}
       </div>
 
-      <div
-        role="tabpanel"
-        id={`install-panel-${active}`}
-        aria-labelledby={`install-tab-${active}`}
-        tabIndex={0}
-        className="space-y-4 rounded-md"
-      >
-        {active === "windows" && (
-          <>
-            <p className="text-muted-foreground">{t("install.windows.body")}</p>
-            <Button asChild size="lg">
-              <Link href="/download">
-                <Download aria-hidden="true" />
-                {t("install.windows.button")}
-              </Link>
-            </Button>
-            <p className="text-sm text-muted-foreground">{t("install.windows.note")}</p>
-          </>
-        )}
-        {active === "macos" && (
-          <>
-            <p className="text-muted-foreground">{t("install.macos.body")}</p>
-            <CodeBlock code={COMMANDS.macos} />
-          </>
-        )}
-        {active === "linux" && (
-          <>
-            <p className="text-muted-foreground">{t("install.linux.body")}</p>
-            <CodeBlock code={COMMANDS.linux} />
-            <p className="text-sm text-muted-foreground">{t("install.linux.note")}</p>
-          </>
-        )}
-        {active === "arch" && (
-          <>
-            <p className="text-muted-foreground">{t("install.arch.body")}</p>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <CodeBlock code="yay -S goanime" />
-              <CodeBlock code="paru -S goanime" />
-            </div>
-          </>
-        )}
-        {active === "go" && (
-          <>
-            <p className="text-muted-foreground">{t("install.go.body")}</p>
-            <CodeBlock code={COMMANDS.go} />
-            <p className="text-sm text-muted-foreground">{t("install.go.note")}</p>
-          </>
-        )}
-      </div>
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={active}
+          role="tabpanel"
+          id={`install-panel-${active}`}
+          aria-labelledby={`install-tab-${active}`}
+          tabIndex={0}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -6 }}
+          transition={{ duration: 0.25, ease: EASE }}
+          className="space-y-4 rounded-md"
+        >
+          {active === "windows" && (
+            <>
+              <p className="text-muted-foreground">{t("install.windows.body")}</p>
+              <Button asChild size="lg" className="btn-shine h-12 w-full sm:w-auto">
+                <Link href="/download">
+                  <Download aria-hidden="true" />
+                  {t("install.windows.button")}
+                </Link>
+              </Button>
+              <p className="text-sm text-muted-foreground">{t("install.windows.note")}</p>
+            </>
+          )}
+          {active === "macos" && (
+            <>
+              <p className="text-muted-foreground">{t("install.macos.body")}</p>
+              <CodeBlock code={COMMANDS.macos} />
+            </>
+          )}
+          {active === "linux" && (
+            <>
+              <p className="text-muted-foreground">{t("install.linux.body")}</p>
+              <CodeBlock code={COMMANDS.linux} />
+              <p className="text-sm text-muted-foreground">{t("install.linux.note")}</p>
+            </>
+          )}
+          {active === "arch" && (
+            <>
+              <p className="text-muted-foreground">{t("install.arch.body")}</p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <CodeBlock code="yay -S goanime" />
+                <CodeBlock code="paru -S goanime" />
+              </div>
+            </>
+          )}
+          {active === "go" && (
+            <>
+              <p className="text-muted-foreground">{t("install.go.body")}</p>
+              <CodeBlock code={COMMANDS.go} />
+              <p className="text-sm text-muted-foreground">{t("install.go.note")}</p>
+            </>
+          )}
+        </motion.div>
+      </AnimatePresence>
     </div>
   )
 }

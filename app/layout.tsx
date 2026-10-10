@@ -1,38 +1,46 @@
-import React from "react";
-import { JSX } from "react";
+import type React from "react"
+import type { Metadata, Viewport } from "next"
+import { Geist, Geist_Mono } from "next/font/google"
 import "@/app/globals.css"
-import { Inter } from "next/font/google";
-import { ThemeProvider } from "@/components/theme-provider"
 import { LanguageProviderWrapper } from "@/components/language-provider-wrapper"
-import { AOSProvider } from "@/components/aos-provider"
+import { SITE_URL } from "@/lib/links"
 
-const inter = Inter({ subsets: ["latin"] });
+const sans = Geist({ subsets: ["latin"], variable: "--font-sans", display: "swap" })
+const mono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono", display: "swap" })
 
-export const metadata = {
-  title: "GoAnime - Player de Anime para Terminal",
-  description:
-    "Um player de anime simples para terminal, construído em Go, que permite buscar, assistir e baixar episódios diretamente no MPV.",
-    generator: 'v0.dev'
+const title = "GoAnime: anime no terminal"
+const description =
+  "Busque, assista e baixe anime, filmes e séries pelo terminal, em português e inglês. Código aberto, para Linux, macOS e Windows."
+
+export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  title: { default: title, template: "%s · GoAnime" },
+  description,
+  applicationName: "GoAnime",
+  keywords: ["GoAnime", "anime", "terminal", "CLI", "TUI", "mpv", "Go", "open source", "ani-cli"],
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    url: SITE_URL,
+    siteName: "GoAnime",
+    title,
+    description,
+    locale: "pt_BR",
+    alternateLocale: ["en_US", "es_ES"],
+  },
+  twitter: { card: "summary_large_image", title, description },
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export const viewport: Viewport = {
+  themeColor: "#0a0a0c",
+  colorScheme: "dark",
+}
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" suppressHydrationWarning>
-      <head>
-        <link rel="icon" href="/favicon.png" />
-      </head>
-      <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-          <LanguageProviderWrapper>
-            <AOSProvider>
-              {children}
-            </AOSProvider>
-          </LanguageProviderWrapper>
-        </ThemeProvider>
+    <html lang="pt-BR" className={`${sans.variable} ${mono.variable}`}>
+      <body className="min-h-dvh font-sans">
+        <LanguageProviderWrapper>{children}</LanguageProviderWrapper>
       </body>
     </html>
   )

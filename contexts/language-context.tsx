@@ -25,7 +25,6 @@ const pt = {
   "nav.download": "Download",
   "nav.home": "Início do GoAnime",
   "nav.label": "Navegação principal",
-  "nav.skip": "Pular para o conteúdo",
   "nav.menu.open": "Abrir menu",
   "nav.menu.close": "Fechar menu",
 
@@ -175,7 +174,6 @@ const en: Dictionary = {
   "nav.download": "Download",
   "nav.home": "GoAnime home",
   "nav.label": "Main navigation",
-  "nav.skip": "Skip to content",
   "nav.menu.open": "Open menu",
   "nav.menu.close": "Close menu",
 
@@ -320,7 +318,6 @@ const es: Dictionary = {
   "nav.download": "Descargar",
   "nav.home": "Inicio de GoAnime",
   "nav.label": "Navegación principal",
-  "nav.skip": "Saltar al contenido",
   "nav.menu.open": "Abrir menú",
   "nav.menu.close": "Cerrar menú",
 

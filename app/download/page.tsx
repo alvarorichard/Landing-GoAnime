@@ -162,8 +162,10 @@ export default function DownloadPage() {
     },
   ]
 
+  // In UTC, so the date the server renders matches the one the browser
+  // hydrates, whatever either one's time zone.
   const published = release
-    ? new Intl.DateTimeFormat(locale, { dateStyle: "long" }).format(new Date(release.published_at))
+    ? new Intl.DateTimeFormat(locale, { dateStyle: "long", timeZone: "UTC" }).format(new Date(release.published_at))
     : null
 
   return (

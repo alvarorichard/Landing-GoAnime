@@ -128,7 +128,8 @@ export function Hero() {
               <BrandMark
                 size={440}
                 alt="GoAnime"
-                priority
+                loading="eager"
+                fetchPriority="high"
                 className="h-auto w-[min(240px,62vw)] drop-shadow-[0_24px_60px_rgba(0,0,0,0.65)] md:w-[min(440px,40vw)]"
               />
             </motion.div>

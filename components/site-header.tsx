@@ -63,7 +63,7 @@ export function SiteHeader() {
         <Link href="/" aria-label={t("nav.home")} className="group flex items-center gap-2.5 rounded-md">
           <BrandMark
             size={30}
-            priority
+            loading="eager"
             className="transition-transform duration-500 ease-out group-hover:-rotate-6 group-hover:scale-110"
           />
           <span className="text-[17px] font-semibold tracking-tight">GoAnime</span>

@@ -15,7 +15,7 @@ export function LanguageSwitcher() {
       <select
         value={language}
         onChange={(e) => setLanguage(e.target.value as Language)}
-        className="h-full cursor-pointer appearance-none rounded-md bg-transparent pl-8 pr-7 outline-none"
+        className="h-full cursor-pointer appearance-none rounded-md bg-transparent pl-8 pr-7 outline-hidden"
       >
         {LANGUAGES.map(({ code }) => (
           <option key={code} value={code} className="bg-popover text-popover-foreground">

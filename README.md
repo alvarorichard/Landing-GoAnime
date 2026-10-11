@@ -7,7 +7,7 @@ latest GitHub release to offer the right file for each system.
 
 ## Development
 
-With Node.js 20 or later and pnpm:
+With Node.js 22 or later and pnpm:
 
 ```bash
 pnpm install

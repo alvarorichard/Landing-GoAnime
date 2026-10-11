@@ -6,8 +6,8 @@ import { Providers } from "@/components/providers"
 import { SITE_URL } from "@/lib/links"
 import { getProject } from "@/lib/project"
 
-const sans = Geist({ subsets: ["latin"], variable: "--font-sans", display: "swap" })
-const mono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono", display: "swap" })
+const sans = Geist({ subsets: ["latin"], variable: "--font-geist-sans", display: "swap" })
+const mono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono", display: "swap" })
 
 const title = "GoAnime: anime no terminal"
 const description =

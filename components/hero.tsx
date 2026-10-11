@@ -101,7 +101,7 @@ export function Hero() {
         {AURORA.map((style, i) => (
           <div key={i} className="aurora-blob" style={style} />
         ))}
-        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-background" />
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-linear-to-b from-transparent to-background" />
       </div>
 
       <div className="container grid items-center gap-10 pb-16 pt-8 md:grid-cols-[1.1fr_1fr] md:gap-12 md:py-24 lg:py-32">
@@ -142,7 +142,7 @@ export function Hero() {
               href={release.html_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="border-beam group inline-flex items-center gap-2 rounded-full border border-border bg-white/[0.03] py-1 pl-1 pr-3 text-[13px] text-muted-foreground backdrop-blur-sm transition-colors hover:text-foreground"
+              className="border-beam group inline-flex items-center gap-2 rounded-full border border-border bg-white/[0.03] py-1 pl-1 pr-3 text-[13px] text-muted-foreground backdrop-blur-xs transition-colors hover:text-foreground"
             >
               <span className="rounded-full bg-primary/15 px-2 py-0.5 font-mono text-xs text-brand">
                 {release.tag_name}
@@ -194,7 +194,7 @@ export function Hero() {
               asChild
               size="lg"
               variant="outline"
-              className="h-12 w-full border-border bg-white/[0.02] px-5 backdrop-blur-sm hover:bg-white/[0.06] sm:w-auto"
+              className="h-12 w-full border-border bg-white/[0.02] px-5 backdrop-blur-xs hover:bg-white/[0.06] sm:w-auto"
             >
               <a href={links.github} target="_blank" rel="noopener noreferrer">
                 <GitHubIcon />

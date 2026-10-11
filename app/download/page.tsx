@@ -241,7 +241,7 @@ export default function DownloadPage() {
                   whileHover={{ y: -4 }}
                   aria-labelledby={`dl-${card.id}`}
                   className={cn(
-                    "group flex flex-col gap-5 rounded-xl border bg-card/60 p-6 backdrop-blur-sm transition-colors",
+                    "group flex flex-col gap-5 rounded-xl border bg-card/60 p-6 backdrop-blur-xs transition-colors",
                     // On phones the visitor's own system comes first.
                     recommended
                       ? "border-beam order-first border-primary/40 lg:order-none"

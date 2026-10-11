@@ -1,6 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 /*
  * One dark theme, built around the GoAnime mark: near-black ground, light
@@ -36,6 +34,45 @@
   }
 }
 
+/* The variables above as Tailwind colors, fonts (from next/font) and radii. */
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-brand: hsl(var(--brand));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+}
+
+/* Full width with a 1.25rem gutter, up to 1200px. The max-width comes after
+   Tailwind's own per-breakpoint widths for container, so it replaces them. */
+@utility container {
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+  max-width: 1200px;
+}
+
 @layer base {
   * {
     @apply border-border;
@@ -47,8 +84,13 @@
   body {
     @apply bg-background text-foreground antialiased;
   }
+  /* Tailwind 4 gives buttons the default cursor; keep the pointer. */
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
   :focus-visible {
-    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+    @apply outline-hidden ring-2 ring-ring ring-offset-2 ring-offset-background;
   }
   ::selection {
     background: hsl(var(--primary) / 0.45);
@@ -60,54 +102,52 @@
  * border beam animates a registered custom property), and all of it stops for
  * visitors who ask the system for reduced motion.
  */
-@layer utilities {
-  /* Faint grid behind the hero, faded out toward the edges. */
-  .bg-grid {
-    background-image: linear-gradient(to right, hsl(var(--foreground) / 0.045) 1px, transparent 1px),
-      linear-gradient(to bottom, hsl(var(--foreground) / 0.045) 1px, transparent 1px);
-    background-size: 56px 56px;
-    mask-image: radial-gradient(ellipse 70% 60% at 60% 40%, #000 30%, transparent 75%);
-  }
 
-  /* Slow crimson aurora. Soft-edged radial gradients instead of filter: blur,
-     which is far cheaper to animate on phones. */
-  .aurora-blob {
-    position: absolute;
-    border-radius: 9999px;
-    will-change: transform;
-    animation: aurora-drift var(--aurora-duration, 22s) ease-in-out infinite alternate;
-  }
+/* Faint grid behind the hero, faded out toward the edges. */
+@utility bg-grid {
+  background-image:
+    linear-gradient(to right, hsl(var(--foreground) / 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, hsl(var(--foreground) / 0.045) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 70% 60% at 60% 40%, #000 30%, transparent 75%);
+}
 
-  /* Pointer-following highlight for cards; the element sets --x and --y. */
-  .spotlight {
-    position: relative;
-    isolation: isolate;
-  }
-  .spotlight::after {
+/* Slow crimson aurora. Soft-edged radial gradients instead of filter: blur,
+   which is far cheaper to animate on phones. */
+@utility aurora-blob {
+  position: absolute;
+  border-radius: 9999px;
+  will-change: transform;
+  animation: aurora-drift var(--aurora-duration, 22s) ease-in-out infinite alternate;
+}
+
+/* Pointer-following highlight for cards; the element sets --x and --y. */
+@utility spotlight {
+  position: relative;
+  isolation: isolate;
+
+  &::after {
     content: "";
     position: absolute;
     inset: 0;
     z-index: -1;
     border-radius: inherit;
-    background: radial-gradient(
-      420px circle at var(--x, 50%) var(--y, 50%),
-      hsl(var(--primary) / 0.14),
-      transparent 45%
-    );
+    background: radial-gradient(420px circle at var(--x, 50%) var(--y, 50%), hsl(var(--primary) / 0.14), transparent 45%);
     opacity: 0;
     transition: opacity 0.3s ease;
     pointer-events: none;
   }
-  .spotlight:hover::after {
+  &:hover::after {
     opacity: 1;
   }
+}
 
-  /* A light sweep across the primary button on hover. */
-  .btn-shine {
-    position: relative;
-    overflow: hidden;
-  }
-  .btn-shine::after {
+/* A light sweep across the primary button on hover. */
+@utility btn-shine {
+  position: relative;
+  overflow: hidden;
+
+  &::after {
     content: "";
     position: absolute;
     inset: 0;
@@ -116,27 +156,23 @@
     transform: translateX(-130%) skewX(-20deg);
     pointer-events: none;
   }
-  .btn-shine:hover::after {
+  &:hover::after {
     animation: shine 0.9s cubic-bezier(0.22, 1, 0.36, 1);
   }
+}
 
-  /* A beam of light travelling around the border, for the highlighted card. */
-  .border-beam {
-    position: relative;
-    isolation: isolate;
-  }
-  .border-beam::before {
+/* A beam of light travelling around the border, for highlighted elements. */
+@utility border-beam {
+  position: relative;
+  isolation: isolate;
+
+  &::before {
     content: "";
     position: absolute;
     inset: -1px;
     border-radius: inherit;
     padding: 1px;
-    background: conic-gradient(
-      from var(--beam-angle),
-      transparent 0deg 250deg,
-      hsl(var(--brand)) 320deg,
-      transparent 360deg
-    );
+    background: conic-gradient(from var(--beam-angle), transparent 0deg 250deg, hsl(var(--brand)) 320deg, transparent 360deg);
     -webkit-mask:
       linear-gradient(#000 0 0) content-box,
       linear-gradient(#000 0 0);
@@ -145,10 +181,10 @@
     animation: beam-spin 5s linear infinite;
     pointer-events: none;
   }
+}
 
-  .animate-glow {
-    animation: glow-pulse 6s ease-in-out infinite;
-  }
+@utility animate-glow {
+  animation: glow-pulse 6s ease-in-out infinite;
 }
 
 @property --beam-angle {

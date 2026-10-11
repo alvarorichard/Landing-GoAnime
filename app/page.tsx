@@ -13,17 +13,21 @@ import {
   Star,
   type LucideIcon,
 } from "lucide-react"
+import { Contributors } from "@/components/contributors"
+import { CopyButton } from "@/components/copy-button"
 import { DemoSection } from "@/components/demo-section"
 import { Hero } from "@/components/hero"
 import { GitHubIcon } from "@/components/icons"
 import { InstallTabs } from "@/components/install-tabs"
 import { CountUp, Reveal, Spotlight, Stagger, StaggerItem } from "@/components/motion"
+import { ProjectStats } from "@/components/project-stats"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { Button } from "@/components/ui/button"
-import { LANGUAGES, useLanguage, type TranslationKey } from "@/contexts/language-context"
-import { formatStars, useGitHubStars } from "@/hooks/use-github-stars"
+import { useLanguage, type TranslationKey } from "@/contexts/language-context"
+import { useProject } from "@/contexts/project-context"
 import { links } from "@/lib/links"
+import { formatCount } from "@/lib/utils"
 
 const FEATURES: { icon: LucideIcon; title: TranslationKey; body: TranslationKey }[] = [
   { icon: Layers, title: "features.sources.title", body: "features.sources.body" },
@@ -59,9 +63,8 @@ function SectionHeading({ id, title, subtitle }: { id: string; title: string; su
 }
 
 export default function Home() {
-  const { t, language } = useLanguage()
-  const stars = useGitHubStars()
-  const locale = LANGUAGES.find((l) => l.code === language)?.htmlLang ?? "pt-BR"
+  const { t, locale } = useLanguage()
+  const { stars } = useProject()
 
   const community = [
     {
@@ -93,6 +96,7 @@ export default function Home() {
 
       <main id="main">
         <Hero />
+        <ProjectStats />
 
         <DemoSection
           heading={<SectionHeading id="demo-title" title={t("demo.title")} subtitle={t("demo.subtitle")} />}
@@ -147,9 +151,12 @@ export default function Home() {
               {/* A list on phones, so no command is cut off; a table from md up. */}
               <ul className="divide-y divide-border rounded-xl border border-border md:hidden">
                 {USAGE.map(({ label, command }) => (
-                  <li key={command} className="space-y-1.5 px-4 py-3.5">
-                    <p className="text-sm text-muted-foreground">{t(label)}</p>
-                    <code className="block overflow-x-auto whitespace-nowrap font-mono text-[13px]">{command}</code>
+                  <li key={command} className="flex items-center gap-2 py-2.5 pl-4 pr-2">
+                    <div className="min-w-0 flex-1 space-y-1.5">
+                      <p className="text-sm text-muted-foreground">{t(label)}</p>
+                      <code className="block overflow-x-auto whitespace-nowrap font-mono text-[13px]">{command}</code>
+                    </div>
+                    <CopyButton text={command} className="h-10 w-10" />
                   </li>
                 ))}
               </ul>
@@ -169,8 +176,11 @@ export default function Home() {
                     {USAGE.map(({ label, command }) => (
                       <tr key={command} className="border-t border-border transition-colors hover:bg-white/[0.02]">
                         <td className="px-5 py-3 text-muted-foreground">{t(label)}</td>
-                        <td className="px-5 py-3">
-                          <code className="whitespace-nowrap font-mono text-[13px] text-foreground">{command}</code>
+                        <td className="py-2 pl-5 pr-2">
+                          <div className="flex items-center justify-between gap-3">
+                            <code className="whitespace-nowrap font-mono text-[13px] text-foreground">{command}</code>
+                            <CopyButton text={command} />
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -211,6 +221,7 @@ export default function Home() {
                 </StaggerItem>
               ))}
             </Stagger>
+            <Contributors />
             <Reveal>
               <div className="flex flex-col gap-4 rounded-xl border border-border p-6 sm:flex-row sm:items-center sm:justify-between">
                 <p className="text-pretty text-muted-foreground">{t("community.star")}</p>
@@ -224,7 +235,7 @@ export default function Home() {
                     {t("community.star.cta")}
                     {stars !== null && (
                       <span className="border-l border-border pl-2 tabular-nums text-muted-foreground">
-                        <CountUp value={stars} format={(n) => formatStars(n, locale)} />
+                        <CountUp value={stars} format={(n) => formatCount(n, locale)} />
                       </span>
                     )}
                   </a>

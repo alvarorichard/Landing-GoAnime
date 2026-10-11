@@ -11,7 +11,8 @@ import { AppleIcon, LinuxIcon, WindowsIcon } from "@/components/os-icons"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { Button } from "@/components/ui/button"
-import { LANGUAGES, useLanguage } from "@/contexts/language-context"
+import { useLanguage } from "@/contexts/language-context"
+import { useProject } from "@/contexts/project-context"
 import { usePlatform } from "@/hooks/use-platform"
 import { links } from "@/lib/links"
 import {
@@ -36,18 +37,21 @@ interface FileLink {
 }
 
 export default function DownloadPage() {
-  const { t, language } = useLanguage()
+  const { t, locale } = useLanguage()
   const platform = usePlatform()
-  const [release, setRelease] = useState<Release | null>(null)
-  const [status, setStatus] = useState<Status>("loading")
+  // The server normally supplies the latest release; if it could not reach
+  // GitHub, the browser asks instead.
+  const { release: serverRelease } = useProject()
+  const [release, setRelease] = useState<Release | null>(serverRelease)
+  const [status, setStatus] = useState<Status>(serverRelease ? "ready" : "loading")
   const [linuxArch, setLinuxArch] = useState<LinuxArch>("amd64")
-  const locale = LANGUAGES.find((l) => l.code === language)?.htmlLang ?? "pt-BR"
 
   useEffect(() => {
     if (/aarch64|arm64/i.test(navigator.userAgent)) setLinuxArch("arm64")
   }, [])
 
   useEffect(() => {
+    if (serverRelease) return
     const controller = new AbortController()
     fetch(`https://api.github.com/repos/${REPO}/releases/latest`, {
       signal: controller.signal,
@@ -64,7 +68,7 @@ export default function DownloadPage() {
         if ((err as Error).name !== "AbortError") setStatus("error")
       })
     return () => controller.abort()
-  }, [])
+  }, [serverRelease])
 
   const files = useMemo(() => (release ? pickDownloads(release.assets) : null), [release])
   const linux = files?.linux[linuxArch]

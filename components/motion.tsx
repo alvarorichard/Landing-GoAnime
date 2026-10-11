@@ -1,8 +1,16 @@
 "use client"
 
 import type React from "react"
-import { useEffect, useRef, type PointerEvent } from "react"
-import { animate, motion, useInView, useMotionValue, useTransform, type Variants } from "framer-motion"
+import { useEffect, useLayoutEffect, useRef, type PointerEvent } from "react"
+import {
+  animate,
+  motion,
+  useInView,
+  useMotionValue,
+  useReducedMotion,
+  useTransform,
+  type Variants,
+} from "framer-motion"
 import { cn } from "@/lib/utils"
 
 // The site's one easing curve: a long, soft ease-out (easeOutQuint).
@@ -51,7 +59,7 @@ export function Stagger({
 }: {
   children: React.ReactNode
   className?: string
-  as?: "div" | "ul"
+  as?: "div" | "ul" | "dl"
   gap?: number
 }) {
   const Component = motion[as]
@@ -85,18 +93,29 @@ export function StaggerItem({
   )
 }
 
-// Counts up to value the first time it is seen.
+// Counts up to value the first time it is seen. The server HTML carries the
+// real number; in the browser it drops to zero before the first paint, while
+// the Reveal around it still hides it, and counts up once seen.
 export function CountUp({ value, format }: { value: number; format: (n: number) => string }) {
   const ref = useRef<HTMLSpanElement>(null)
   const inView = useInView(ref, { once: true })
-  const count = useMotionValue(0)
+  const reduceMotion = useReducedMotion()
+  const count = useMotionValue(value)
   const text = useTransform(count, (n) => format(Math.round(n)))
+
+  useLayoutEffect(() => {
+    if (!reduceMotion) count.set(0)
+  }, [count, reduceMotion])
 
   useEffect(() => {
     if (!inView) return
+    if (reduceMotion) {
+      count.set(value)
+      return
+    }
     const controls = animate(count, value, { duration: 1.4, ease: EASE })
     return () => controls.stop()
-  }, [inView, value, count])
+  }, [inView, value, count, reduceMotion])
 
   return <motion.span ref={ref}>{text}</motion.span>
 }

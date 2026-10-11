@@ -28,6 +28,18 @@ sure the production build passes; it also type-checks the code:
 pnpm build
 ```
 
+## Live numbers
+
+The star count, downloads, contributors, latest release and Discord members
+are fetched on the server (`lib/project.ts`) and cached, GitHub for an hour
+and Discord for ten minutes, so the pages are static and regenerate every
+ten minutes. Anything that cannot be fetched is left out of the page.
+
+Without a token the GitHub API allows 60 requests an hour per IP, which hosts
+that share outgoing IPs can run out of. Set `GITHUB_TOKEN` in the hosting
+environment to raise that to 5,000; a fine-grained token with no permissions
+is enough, since everything it reads is public.
+
 ## Layout
 
 | Path | What it holds |
@@ -37,8 +49,9 @@ pnpm build
 | `app/opengraph-image.tsx` | Link preview image, rendered at build time |
 | `contexts/language-context.tsx` | All text, in Portuguese, English and Spanish |
 | `lib/releases.ts` | Picks the right files out of a GoAnime release |
+| `lib/project.ts` | Fetches the live numbers shown on the site |
 | `components/motion.tsx` | Reveal, stagger, count-up and spotlight animations |
-| `components/` | Hero, header, footer, install tabs, code blocks, OS icons |
+| `components/` | Hero, stats, contributors, header, footer, install tabs, code blocks, OS icons |
 | `public/brand/` | The GoAnime mark |
 | `public/demo/` | The demo video and its poster |
 

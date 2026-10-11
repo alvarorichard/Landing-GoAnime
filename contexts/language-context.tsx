@@ -38,6 +38,13 @@ const pt = {
   "hero.download.linux": "Baixar para Linux",
   "hero.github": "Ver no GitHub",
   "hero.stars": "estrelas no GitHub",
+  "hero.release": "Veja as novidades",
+
+  "stats.label": "O GoAnime em números",
+  "stats.downloads": "downloads",
+  "stats.contributors": "contribuidores",
+  "stats.discord": "pessoas no Discord",
+  "stats.online": "online agora",
 
   "demo.title": "Veja funcionando",
   "demo.subtitle": "Uma sessão real: a busca, a lista de resultados com detalhes e o episódio tocando no mpv.",
@@ -112,6 +119,10 @@ const pt = {
   "community.mobile.cta": "Ver o projeto",
   "community.star": "Se o GoAnime é útil para você, uma estrela no GitHub ajuda outras pessoas a encontrá-lo.",
   "community.star.cta": "Dar uma estrela",
+  "community.contributors.title": "Feito por {count} pessoas",
+  "community.contributors.body":
+    "Cada pessoa aqui tem código no GoAnime. Seu primeiro pull request aceito coloca você nesta lista.",
+  "community.contributors.cta": "Como contribuir",
 
   "footer.tagline": "Anime no terminal.",
   "footer.by": "Desenvolvido por",
@@ -187,6 +198,13 @@ const en: Dictionary = {
   "hero.download.linux": "Download for Linux",
   "hero.github": "View on GitHub",
   "hero.stars": "stars on GitHub",
+  "hero.release": "See what's new",
+
+  "stats.label": "GoAnime in numbers",
+  "stats.downloads": "downloads",
+  "stats.contributors": "contributors",
+  "stats.discord": "people on Discord",
+  "stats.online": "online now",
 
   "demo.title": "See it in action",
   "demo.subtitle": "A real session: the search, the result list with details, and the episode playing in mpv.",
@@ -260,6 +278,10 @@ const en: Dictionary = {
   "community.mobile.cta": "See the project",
   "community.star": "If GoAnime is useful to you, a star on GitHub helps other people find it.",
   "community.star.cta": "Star on GitHub",
+  "community.contributors.title": "Made by {count} people",
+  "community.contributors.body":
+    "Everyone here has code in GoAnime. Your first merged pull request puts you on this list.",
+  "community.contributors.cta": "How to contribute",
 
   "footer.tagline": "Anime in the terminal.",
   "footer.by": "Developed by",
@@ -331,6 +353,13 @@ const es: Dictionary = {
   "hero.download.linux": "Descargar para Linux",
   "hero.github": "Ver en GitHub",
   "hero.stars": "estrellas en GitHub",
+  "hero.release": "Mira las novedades",
+
+  "stats.label": "GoAnime en números",
+  "stats.downloads": "descargas",
+  "stats.contributors": "colaboradores",
+  "stats.discord": "personas en Discord",
+  "stats.online": "en línea ahora",
 
   "demo.title": "Míralo en acción",
   "demo.subtitle":
@@ -406,6 +435,10 @@ const es: Dictionary = {
   "community.mobile.cta": "Ver el proyecto",
   "community.star": "Si GoAnime te resulta útil, una estrella en GitHub ayuda a que otras personas lo encuentren.",
   "community.star.cta": "Dar una estrella",
+  "community.contributors.title": "Hecho por {count} personas",
+  "community.contributors.body":
+    "Cada persona aquí tiene código en GoAnime. Tu primer pull request aceptado te pone en esta lista.",
+  "community.contributors.cta": "Cómo contribuir",
 
   "footer.tagline": "Anime en la terminal.",
   "footer.by": "Desarrollado por",
@@ -459,6 +492,8 @@ type LanguageContextType = {
   language: Language
   setLanguage: (language: Language) => void
   t: (key: TranslationKey) => string
+  // BCP 47 tag for Intl formatting, such as "pt-BR".
+  locale: string
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
@@ -477,9 +512,11 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }, [])
 
+  const locale = LANGUAGES.find((l) => l.code === language)?.htmlLang ?? "pt-BR"
+
   useEffect(() => {
-    document.documentElement.lang = LANGUAGES.find((l) => l.code === language)?.htmlLang ?? "pt-BR"
-  }, [language])
+    document.documentElement.lang = locale
+  }, [locale])
 
   const setLanguage = useCallback((next: Language) => {
     setLanguageState(next)
@@ -491,8 +528,8 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, [])
 
   const value = useMemo<LanguageContextType>(
-    () => ({ language, setLanguage, t: (key) => dictionaries[language][key] }),
-    [language, setLanguage],
+    () => ({ language, setLanguage, t: (key) => dictionaries[language][key], locale }),
+    [language, setLanguage, locale],
   )
 
   return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>

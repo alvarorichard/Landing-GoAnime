@@ -10,6 +10,7 @@ import { GitHubIcon } from "@/components/icons"
 import { EASE } from "@/components/motion"
 import { Button } from "@/components/ui/button"
 import { useLanguage } from "@/contexts/language-context"
+import { useProject } from "@/contexts/project-context"
 import { usePlatform } from "@/hooks/use-platform"
 import { links } from "@/lib/links"
 
@@ -50,6 +51,7 @@ const AURORA: React.CSSProperties[] = [
 
 export function Hero() {
   const { t, language } = useLanguage()
+  const { release } = useProject()
   const platform = usePlatform()
   const reduceMotion = useReducedMotion()
   const ref = useRef<HTMLElement>(null)
@@ -134,9 +136,24 @@ export function Hero() {
         </motion.div>
 
         <div className="space-y-6 md:order-1 md:space-y-7">
-          <motion.p {...intro(0)} className="font-mono text-[13px] tracking-wide text-muted-foreground">
-            {t("hero.eyebrow")}
-          </motion.p>
+          {release && (
+            <motion.a
+              {...intro(0)}
+              href={release.html_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="border-beam group inline-flex items-center gap-2 rounded-full border border-border bg-white/[0.03] py-1 pl-1 pr-3 text-[13px] text-muted-foreground backdrop-blur-sm transition-colors hover:text-foreground"
+            >
+              <span className="rounded-full bg-primary/15 px-2 py-0.5 font-mono text-xs text-brand">
+                {release.tag_name}
+              </span>
+              {t("hero.release")}
+              <ArrowRight
+                aria-hidden="true"
+                className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
+              />
+            </motion.a>
+          )}
 
           <h1
             id="hero-title"
@@ -185,6 +202,10 @@ export function Hero() {
               </a>
             </Button>
           </motion.div>
+
+          <motion.p {...intro(0.7)} className="font-mono text-[13px] tracking-wide text-muted-foreground">
+            {t("hero.eyebrow")}
+          </motion.p>
         </div>
       </div>
     </section>

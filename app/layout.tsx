@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 import "@/app/globals.css"
 import { Providers } from "@/components/providers"
 import { SITE_URL } from "@/lib/links"
+import { getProject } from "@/lib/project"
 
 const sans = Geist({ subsets: ["latin"], variable: "--font-sans", display: "swap" })
 const mono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono", display: "swap" })
@@ -36,11 +37,13 @@ export const viewport: Viewport = {
   colorScheme: "dark",
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const project = await getProject()
+
   return (
     <html lang="pt-BR" className={`${sans.variable} ${mono.variable}`}>
       <body className="min-h-dvh font-sans">
-        <Providers>{children}</Providers>
+        <Providers project={project}>{children}</Providers>
       </body>
     </html>
   )

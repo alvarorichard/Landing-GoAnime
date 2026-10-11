@@ -8,15 +8,14 @@ import { BrandMark } from "@/components/brand-mark"
 import { GitHubIcon } from "@/components/icons"
 import { LanguageSwitcher } from "@/components/language-switcher"
 import { EASE } from "@/components/motion"
-import { LANGUAGES, useLanguage } from "@/contexts/language-context"
-import { formatStars, useGitHubStars } from "@/hooks/use-github-stars"
+import { useLanguage } from "@/contexts/language-context"
+import { useProject } from "@/contexts/project-context"
 import { links } from "@/lib/links"
-import { cn } from "@/lib/utils"
+import { cn, formatCount } from "@/lib/utils"
 
 export function SiteHeader() {
-  const { t, language } = useLanguage()
-  const stars = useGitHubStars()
-  const locale = LANGUAGES.find((l) => l.code === language)?.htmlLang ?? "pt-BR"
+  const { t, locale } = useLanguage()
+  const { stars } = useProject()
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
   const { scrollY } = useScroll()
@@ -48,7 +47,7 @@ export function SiteHeader() {
   const starCount = stars !== null && (
     <span className="inline-flex items-center gap-1 border-l border-border pl-2 tabular-nums">
       <Star className="h-3.5 w-3.5" aria-hidden="true" />
-      {formatStars(stars, locale)}
+      {formatCount(stars, locale)}
       <span className="sr-only">{t("hero.stars")}</span>
     </span>
   )

@@ -1,90 +1,261 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
+/*
+ * One dark theme, built around the GoAnime mark: near-black ground, light
+ * neutrals, and crimson as the only accent. Values are HSL channels so the
+ * shadcn components can apply opacity.
+ */
 @layer base {
   :root {
-    --background: 0 0% 0%;
-    --foreground: 0 0% 100%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 173 80% 40%;
+    --background: 240 8% 4%;
+    --foreground: 240 5% 93%;
+    --card: 240 6% 7%;
+    --card-foreground: 240 5% 93%;
+    --popover: 240 6% 8%;
+    --popover-foreground: 240 5% 93%;
+    /* Crimson for filled controls (white text on it is 5.8:1). */
+    --primary: 350 85% 42%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 173 80% 40%;
-    --radius: 0.5rem;
+    /* Lighter crimson for text and icons on the dark ground (6.9:1). */
+    --brand: 353 100% 68%;
+    --secondary: 240 5% 12%;
+    --secondary-foreground: 240 5% 93%;
+    --muted: 240 5% 12%;
+    --muted-foreground: 240 5% 66%;
+    --accent: 240 5% 13%;
+    --accent-foreground: 240 5% 93%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 5% 16%;
+    --input: 240 5% 16%;
+    --ring: 353 100% 68%;
+    --radius: 0.625rem;
+    color-scheme: dark;
   }
+}
+
+/* The variables above as Tailwind colors, fonts (from next/font) and radii. */
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-brand: hsl(var(--brand));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+}
+
+/* Full width with a 1.25rem gutter, up to 1200px. The max-width comes after
+   Tailwind's own per-breakpoint widths for container, so it replaces them. */
+@utility container {
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+  max-width: 1200px;
 }
 
 @layer base {
   * {
     @apply border-border;
   }
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
   body {
-    @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    @apply bg-background text-foreground antialiased;
+  }
+  /* Tailwind 4 gives buttons the default cursor; keep the pointer. */
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  :focus-visible {
+    @apply outline-hidden ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+  ::selection {
+    background: hsl(var(--primary) / 0.45);
   }
 }
 
-@keyframes blob {
+/*
+ * Ambient motion. Everything here animates transform or opacity only (the
+ * border beam animates a registered custom property), and all of it stops for
+ * visitors who ask the system for reduced motion.
+ */
+
+/* Faint grid behind the hero, faded out toward the edges. */
+@utility bg-grid {
+  background-image:
+    linear-gradient(to right, hsl(var(--foreground) / 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, hsl(var(--foreground) / 0.045) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 70% 60% at 60% 40%, #000 30%, transparent 75%);
+}
+
+/* Slow crimson aurora. Soft-edged radial gradients instead of filter: blur,
+   which is far cheaper to animate on phones. */
+@utility aurora-blob {
+  position: absolute;
+  border-radius: 9999px;
+  will-change: transform;
+  animation: aurora-drift var(--aurora-duration, 22s) ease-in-out infinite alternate;
+}
+
+/* Pointer-following highlight for cards; the element sets --x and --y. */
+@utility spotlight {
+  position: relative;
+  isolation: isolate;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: radial-gradient(420px circle at var(--x, 50%) var(--y, 50%), hsl(var(--primary) / 0.14), transparent 45%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+  &:hover::after {
+    opacity: 1;
+  }
+}
+
+/* A light sweep across the primary button on hover. */
+@utility btn-shine {
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    width: 45%;
+    background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.28), transparent);
+    transform: translateX(-130%) skewX(-20deg);
+    pointer-events: none;
+  }
+  &:hover::after {
+    animation: shine 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+/* A beam of light travelling around the border, for highlighted elements. */
+@utility border-beam {
+  position: relative;
+  isolation: isolate;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: conic-gradient(from var(--beam-angle), transparent 0deg 250deg, hsl(var(--brand)) 320deg, transparent 360deg);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: beam-spin 5s linear infinite;
+    pointer-events: none;
+  }
+}
+
+@utility animate-glow {
+  animation: glow-pulse 6s ease-in-out infinite;
+}
+
+/* FAQ answers slide open in browsers that can animate to height: auto; the
+   others open them at once. */
+@supports (interpolate-size: allow-keywords) {
+  .faq-item {
+    interpolate-size: allow-keywords;
+  }
+  .faq-item::details-content {
+    block-size: 0;
+    overflow: hidden;
+    transition:
+      block-size 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      content-visibility 0.35s allow-discrete;
+  }
+  .faq-item[open]::details-content {
+    block-size: auto;
+  }
+}
+
+@property --beam-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes aurora-drift {
   0% {
-    transform: translate(0px, 0px) scale(1);
+    transform: translate3d(0, 0, 0) scale(1);
   }
-  33% {
-    transform: translate(30px, -50px) scale(1.1);
-  }
-  66% {
-    transform: translate(-20px, 20px) scale(0.9);
+  50% {
+    transform: translate3d(var(--aurora-x, 8%), var(--aurora-y, -6%), 0) scale(1.12);
   }
   100% {
-    transform: translate(0px, 0px) scale(1);
+    transform: translate3d(calc(var(--aurora-x, 8%) * -0.6), calc(var(--aurora-y, -6%) * -0.8), 0) scale(0.94);
   }
 }
 
-.animate-blob {
-  animation: blob 7s infinite;
+@keyframes shine {
+  to {
+    transform: translateX(260%) skewX(-20deg);
+  }
 }
 
-.animation-delay-2000 {
-  animation-delay: 2s;
+@keyframes beam-spin {
+  to {
+    --beam-angle: 360deg;
+  }
 }
 
-.animation-delay-4000 {
-  animation-delay: 4s;
+@keyframes glow-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 0.9;
+  }
 }
 
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .aurora-blob,
+  .border-beam::before,
+  .btn-shine:hover::after,
+  .animate-glow {
+    animation: none !important;
+  }
+  .faq-item::details-content {
+    transition: none !important;
+  }
 }

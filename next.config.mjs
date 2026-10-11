@@ -1,12 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
   images: {
+    // The site ships a handful of pre-sized images; there is nothing for the
+    // optimizer to do.
     unoptimized: true,
   },
 }

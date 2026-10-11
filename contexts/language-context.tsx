@@ -1,615 +1,613 @@
 "use client"
 
 import type React from "react"
-import { createContext, useContext, useState, useEffect } from "react"
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react"
 
-type Language = "pt" | "en" | "es"
+export type Language = "pt" | "en" | "es"
+
+export const LANGUAGES: { code: Language; htmlLang: string }[] = [
+  { code: "pt", htmlLang: "pt-BR" },
+  { code: "en", htmlLang: "en" },
+  { code: "es", htmlLang: "es" },
+]
+
+// Portuguese is the source of truth: every other language must define exactly
+// these keys, which the TranslationKey type enforces at compile time.
+const pt = {
+  "lang.label": "Idioma",
+  "lang.pt": "Português",
+  "lang.en": "English",
+  "lang.es": "Español",
+
+  "nav.features": "Recursos",
+  "nav.demo": "Demo",
+  "nav.install": "Instalação",
+  "nav.download": "Download",
+  "nav.faq": "Dúvidas",
+  "nav.home": "Início do GoAnime",
+  "nav.label": "Navegação principal",
+  "nav.menu.open": "Abrir menu",
+  "nav.menu.close": "Fechar menu",
+
+  "hero.eyebrow": "Código aberto · Linux, macOS e Windows",
+  "hero.title": "Assista anime direto do terminal.",
+  "hero.subtitle":
+    "O GoAnime busca em várias fontes ao mesmo tempo, toca o episódio no mpv e lembra onde você parou. Em português e inglês.",
+  "hero.download": "Baixar o GoAnime",
+  "hero.download.windows": "Baixar para Windows",
+  "hero.download.macos": "Baixar para macOS",
+  "hero.download.linux": "Baixar para Linux",
+  "hero.github": "Ver no GitHub",
+  "hero.stars": "estrelas no GitHub",
+  "hero.release": "Veja as novidades",
+
+  "stats.label": "O GoAnime em números",
+  "stats.downloads": "downloads no GitHub",
+  "stats.contributors": "contribuidores",
+  "stats.discord": "pessoas no Discord",
+  "stats.online": "online agora",
+
+  "demo.title": "Veja funcionando",
+  "demo.subtitle": "Uma sessão real: a busca, a lista de resultados com detalhes e o episódio tocando no mpv.",
+  "demo.caption": "Gravado com curtas de animação japoneses em domínio público, de 1917 a 1929.",
+  "demo.fallback": "Seu navegador não reproduz este vídeo.",
+
+  "features.title": "O que ele faz",
+  "features.subtitle": "Tudo pelo terminal, num único binário.",
+  "features.sources.title": "Várias fontes ao mesmo tempo",
+  "features.sources.body": "Pesquisa em todas as fontes ativas em paralelo e passa para outra quando uma falha.",
+  "features.languages.title": "Português e inglês",
+  "features.languages.body": "Animes legendados e dublados nos dois idiomas, além de filmes e séries em português.",
+  "features.download.title": "Assista ou baixe",
+  "features.download.body":
+    "Escolha a qualidade e assista no mpv, ou baixe um episódio, um intervalo ou a série inteira, com nomes prontos para o Plex.",
+  "features.resume.title": "Continua de onde parou",
+  "features.resume.body": "Guarda o progresso de cada episódio e pula aberturas e encerramentos automaticamente.",
+  "features.discord.title": "Discord Rich Presence",
+  "features.discord.body": "Mostra no seu perfil do Discord o que você está assistindo.",
+  "features.upscale.title": "Upscaling com Anime4K",
+  "features.upscale.body": "Melhora a resolução de vídeos e imagens baixados.",
+
+  "install.title": "Instalação",
+  "install.subtitle":
+    "O GoAnime usa o mpv para reproduzir vídeos. O instalador do Windows já inclui o mpv; nos outros sistemas, instale-o antes.",
+  "install.tabs": "Sistema",
+  "install.windows.body": "Baixe e execute o instalador. Ele instala o GoAnime e o mpv e adiciona os dois ao PATH.",
+  "install.windows.button": "Baixar o instalador",
+  "install.windows.note": "Prefere sem instalador? Há uma versão portátil em .zip na página de download.",
+  "install.macos.body":
+    "Instale o mpv com o Homebrew e depois o binário universal do GoAnime, que roda em Apple Silicon e Intel.",
+  "install.linux.body": "Instale o mpv pelo gerenciador de pacotes da sua distribuição e depois o GoAnime:",
+  "install.linux.note": "Em ARM64, troque amd64 por arm64.",
+  "install.arch.body": "O GoAnime está no AUR. Com yay ou paru:",
+  "install.go.body": "Com Go 1.27 ou mais recente:",
+  "install.go.note":
+    "O histórico de progresso usa SQLite e precisa de um compilador C (CGO). Os binários das releases já vêm com ele.",
+  "install.after": "Depois de instalar, é só rodar",
+  "install.update": "Para atualizar:",
+
+  "copy.copy": "Copiar",
+  "copy.copied": "Copiado",
+
+  "usage.title": "Uso",
+  "usage.subtitle": "Os comandos mais comuns.",
+  "usage.help": "Rode goanime -h para ver todas as opções.",
+  "usage.want": "O que você quer",
+  "usage.command": "Comando",
+  "usage.interactive": "Abrir a busca interativa",
+  "usage.direct": "Buscar direto pelo nome",
+  "usage.episode": "Baixar um episódio",
+  "usage.range": "Baixar um intervalo",
+  "usage.all": "Baixar todos os episódios",
+  "usage.quality": "Escolher a qualidade",
+  "usage.source": "Usar uma fonte específica",
+  "usage.movie": "Baixar um filme",
+  "usage.upscale": "Melhorar um vídeo com Anime4K",
+  "usage.update": "Atualizar o GoAnime",
+
+  "faq.title": "Perguntas frequentes",
+  "faq.subtitle": "Respostas rápidas sobre instalação, downloads e fontes.",
+  "faq.windows.q": "O Windows diz que o arquivo pode ser perigoso. É seguro?",
+  "faq.windows.a":
+    "O SmartScreen avisa sobre programas sem assinatura digital, e o instalador do GoAnime ainda não tem uma. Cada versão é compilada pelo GitHub Actions a partir do código público, e a página de download traz o SHA-256 de todos os arquivos para você conferir o seu. Para continuar, clique em “Mais informações” e depois em “Executar assim mesmo”.",
+  "faq.mpv.q": "Por que preciso do mpv?",
+  "faq.mpv.a":
+    "O GoAnime encontra o episódio e entrega o vídeo ao mpv, um reprodutor leve e de código aberto. O instalador do Windows já traz o mpv; no macOS, instale com `brew install mpv`, e no Linux, pelo gerenciador de pacotes da sua distribuição.",
+  "faq.downloads.q": "Onde ficam os episódios baixados?",
+  "faq.downloads.a":
+    "Em `~/.local/goanime/downloads/anime`, com uma pasta para cada anime e nomes no padrão do Plex, como `Anime - S01E01.mp4`. O `~` é a sua pasta de usuário, também no Windows. Filmes vão para `~/.local/goanime/downloads/movies`. Para usar outra pasta, passe `-o` seguido do caminho.",
+  "faq.sources.q": "Uma fonte parou de funcionar. E agora?",
+  "faq.sources.a":
+    "Por padrão o GoAnime pesquisa em todas as fontes ao mesmo tempo e passa para outra quando uma falha. Os sites mudam com frequência, e os consertos chegam nas novas versões: atualize com `goanime --update` (no Arch, `yay -S goanime`). Se o problema continuar, avise no Discord ou abra uma issue no GitHub.",
+  "faq.sources.link": "Abrir uma issue",
+  "faq.mobile.q": "Funciona no celular?",
+  "faq.mobile.a": "O GoAnime roda em Linux, macOS e Windows. Para Android, existe o GoAnime Mobile, um app separado.",
+  "faq.mobile.link": "Ver o GoAnime Mobile",
+  "faq.uninstall.q": "Como desinstalo?",
+  "faq.uninstall.a":
+    "No Windows, desinstale o GoAnime em Configurações > Aplicativos; o desinstalador também o tira do PATH. No macOS e no Linux, apague o binário com `sudo rm /usr/local/bin/goanime` (no Arch, `yay -R goanime`). Seus downloads e o histórico ficam em `~/.local/goanime` (o histórico do Windows, em `%LOCALAPPDATA%\\GoAnime`) e não são apagados; remova essas pastas se quiser.",
+  "faq.more": "Não achou sua resposta?",
+  "faq.more.link": "Pergunte no Discord",
+
+  "community.title": "Participe",
+  "community.subtitle":
+    "O GoAnime é feito pela comunidade. Toda ajuda conta, de relatar um bug a consertar uma fonte que parou de funcionar.",
+  "community.github.title": "Contribua no GitHub",
+  "community.github.body":
+    "Os sites mudam e as fontes quebram: consertar uma delas é a contribuição mais útil. O guia de desenvolvimento explica como começar.",
+  "community.github.cta": "Abrir o repositório",
+  "community.discord.title": "Discord",
+  "community.discord.body": "Tire dúvidas, mande sugestões e acompanhe as novas versões.",
+  "community.discord.cta": "Entrar no servidor",
+  "community.mobile.title": "GoAnime Mobile",
+  "community.mobile.body": "A versão do GoAnime para Android.",
+  "community.mobile.cta": "Ver o projeto",
+  "community.star": "Se o GoAnime é útil para você, uma estrela no GitHub ajuda outras pessoas a encontrá-lo.",
+  "community.star.cta": "Dar uma estrela",
+  "community.contributors.title": "Feito por {count} pessoas",
+  "community.contributors.body":
+    "Cada pessoa aqui tem código no GoAnime. Seu primeiro pull request aceito coloca você nesta lista.",
+  "community.contributors.cta": "Como contribuir",
+
+  "footer.tagline": "Anime no terminal.",
+  "footer.by": "Desenvolvido por",
+  "footer.contributors": "e colaboradores.",
+  "footer.logo": "Logo criado por um membro da comunidade.",
+  "footer.license": "Licença MIT",
+  "footer.releases": "Releases",
+  "footer.project": "Projeto",
+  "footer.community": "Comunidade",
+  "footer.devguide": "Guia de desenvolvimento",
+  "footer.disclaimer":
+    "O GoAnime não hospeda, envia nem distribui nenhuma mídia. Ele acessa conteúdo que sites de terceiros disponibilizam publicamente e não tem vínculo com nenhum deles.",
+
+  "download.back": "Voltar ao início",
+  "download.title": "Baixar o GoAnime",
+  "download.subtitle": "Escolha o seu sistema. Os arquivos vêm direto da versão mais recente publicada no GitHub.",
+  "download.version": "Versão",
+  "download.published": "Publicada em",
+  "download.notes": "Notas da versão",
+  "download.prerelease": "Pré-lançamento",
+  "download.loading": "Consultando a versão mais recente no GitHub…",
+  "download.error": "Não foi possível consultar o GitHub agora. Os botões abaixo levam sempre à versão mais recente.",
+  "download.recommended": "Recomendado para você",
+  "download.architecture": "Arquitetura",
+  "download.size": "Tamanho",
+  "download.windows.body": "Windows 10 ou mais recente, 64 bits. O instalador já inclui o mpv.",
+  "download.windows.primary": "Baixar o instalador",
+  "download.windows.secondary": "Versão portátil (.zip)",
+  "download.macos.body": "Um único binário para Apple Silicon e Intel. Requer o mpv.",
+  "download.macos.primary": "Baixar para macOS",
+  "download.macos.secondary": "Arquivo .tar.gz",
+  "download.linux.body": "Distribuições de 64 bits, em x86_64 ou ARM64. Requer o mpv.",
+  "download.linux.primary": "Baixar o .tar.gz",
+  "download.linux.secondary": "Binário avulso",
+  "download.checksums": "Verificar os downloads (SHA-256)",
+  "download.after.title": "Depois de baixar",
+  "download.after.windows":
+    "Execute o instalador e abra um terminal novo, para que o PATH atualizado seja carregado. Depois, rode",
+  "download.after.macos": "No terminal, na pasta do download:",
+  "download.after.linux": "Instale o mpv pelo gerenciador de pacotes e, na pasta do download:",
+  "download.other.title": "Outras formas de instalar",
+  "download.other.aur": "Arch Linux (AUR)",
+  "download.other.go": "Com Go",
+  "download.other.source": "Código-fonte",
+  "download.other.source.body": "Clone o repositório e compile. O guia de desenvolvimento tem os detalhes.",
+} as const
+
+export type TranslationKey = keyof typeof pt
+type Dictionary = Record<TranslationKey, string>
+
+const en: Dictionary = {
+  "lang.label": "Language",
+  "lang.pt": "Português",
+  "lang.en": "English",
+  "lang.es": "Español",
+
+  "nav.features": "Features",
+  "nav.demo": "Demo",
+  "nav.install": "Installation",
+  "nav.download": "Download",
+  "nav.faq": "FAQ",
+  "nav.home": "GoAnime home",
+  "nav.label": "Main navigation",
+  "nav.menu.open": "Open menu",
+  "nav.menu.close": "Close menu",
+
+  "hero.eyebrow": "Open source · Linux, macOS and Windows",
+  "hero.title": "Watch anime from your terminal.",
+  "hero.subtitle":
+    "GoAnime searches several sources at once, plays the episode in mpv, and remembers where you stopped. In English and Brazilian Portuguese.",
+  "hero.download": "Download GoAnime",
+  "hero.download.windows": "Download for Windows",
+  "hero.download.macos": "Download for macOS",
+  "hero.download.linux": "Download for Linux",
+  "hero.github": "View on GitHub",
+  "hero.stars": "stars on GitHub",
+  "hero.release": "See what's new",
+
+  "stats.label": "GoAnime in numbers",
+  "stats.downloads": "downloads on GitHub",
+  "stats.contributors": "contributors",
+  "stats.discord": "people on Discord",
+  "stats.online": "online now",
+
+  "demo.title": "See it in action",
+  "demo.subtitle": "A real session: the search, the result list with details, and the episode playing in mpv.",
+  "demo.caption": "Recorded with Japanese animated shorts in the public domain, from 1917 to 1929.",
+  "demo.fallback": "Your browser cannot play this video.",
+
+  "features.title": "What it does",
+  "features.subtitle": "All from the terminal, in a single binary.",
+  "features.sources.title": "Several sources at once",
+  "features.sources.body": "Searches every enabled source in parallel and falls back to another when one fails.",
+  "features.languages.title": "English and Portuguese",
+  "features.languages.body": "Subbed and dubbed anime in both languages, plus movies and TV shows in Portuguese.",
+  "features.download.title": "Stream or download",
+  "features.download.body":
+    "Pick a quality and watch in mpv, or download one episode, a range, or a whole series, named for Plex.",
+  "features.resume.title": "Picks up where you left off",
+  "features.resume.body": "Keeps your progress on every episode and skips openings and endings automatically.",
+  "features.discord.title": "Discord Rich Presence",
+  "features.discord.body": "Shows what you are watching on your Discord profile.",
+  "features.upscale.title": "Anime4K upscaling",
+  "features.upscale.body": "Improves the resolution of downloaded videos and images.",
+
+  "install.title": "Installation",
+  "install.subtitle":
+    "GoAnime plays video through mpv. The Windows installer includes it; on other systems, install mpv first.",
+  "install.tabs": "System",
+  "install.windows.body": "Download and run the installer. It installs GoAnime and mpv and adds both to your PATH.",
+  "install.windows.button": "Download the installer",
+  "install.windows.note": "Prefer no installer? A portable .zip is on the download page.",
+  "install.macos.body":
+    "Install mpv with Homebrew, then GoAnime's universal binary, which runs on Apple Silicon and Intel.",
+  "install.linux.body": "Install mpv with your distribution's package manager, then GoAnime:",
+  "install.linux.note": "On ARM64, replace amd64 with arm64.",
+  "install.arch.body": "GoAnime is in the AUR. With yay or paru:",
+  "install.go.body": "With Go 1.27 or later:",
+  "install.go.note": "Progress tracking uses SQLite and needs a C compiler (CGO). Release binaries include it.",
+  "install.after": "Once installed, just run",
+  "install.update": "To update:",
+
+  "copy.copy": "Copy",
+  "copy.copied": "Copied",
+
+  "usage.title": "Usage",
+  "usage.subtitle": "The most common commands.",
+  "usage.help": "Run goanime -h for every option.",
+  "usage.want": "What you want",
+  "usage.command": "Command",
+  "usage.interactive": "Open the interactive search",
+  "usage.direct": "Search by name directly",
+  "usage.episode": "Download one episode",
+  "usage.range": "Download a range",
+  "usage.all": "Download every episode",
+  "usage.quality": "Choose the quality",
+  "usage.source": "Use a specific source",
+  "usage.movie": "Download a movie",
+  "usage.upscale": "Upscale a video with Anime4K",
+  "usage.update": "Update GoAnime",
+
+  "faq.title": "Frequently asked questions",
+  "faq.subtitle": "Quick answers about installing, downloads and sources.",
+  "faq.windows.q": "Windows says the file might be dangerous. Is it safe?",
+  "faq.windows.a":
+    "SmartScreen warns about programs without a digital signature, and the GoAnime installer doesn't have one yet. Every release is built by GitHub Actions from the public source code, and the download page links the SHA-256 checksums of every file so you can verify yours. To continue, click “More info” and then “Run anyway”.",
+  "faq.mpv.q": "Why do I need mpv?",
+  "faq.mpv.a":
+    "GoAnime finds the episode and hands the video to mpv, a lightweight open-source player. The Windows installer already includes mpv; on macOS, install it with `brew install mpv`, and on Linux, with your distribution's package manager.",
+  "faq.downloads.q": "Where do downloaded episodes go?",
+  "faq.downloads.a":
+    "To `~/.local/goanime/downloads/anime`, with a folder for each anime and Plex-style names such as `Anime - S01E01.mp4`. The `~` is your user folder, on Windows too. Movies go to `~/.local/goanime/downloads/movies`. To use another folder, pass `-o` followed by the path.",
+  "faq.sources.q": "A source stopped working. What now?",
+  "faq.sources.a":
+    "By default GoAnime searches every source at once and falls back to another when one fails. Sites change often, and fixes ship in new releases: update with `goanime --update` (on Arch, `yay -S goanime`). If the problem persists, tell us on Discord or open an issue on GitHub.",
+  "faq.sources.link": "Open an issue",
+  "faq.mobile.q": "Does it work on phones?",
+  "faq.mobile.a": "GoAnime runs on Linux, macOS and Windows. For Android, there is GoAnime Mobile, a separate app.",
+  "faq.mobile.link": "See GoAnime Mobile",
+  "faq.uninstall.q": "How do I uninstall it?",
+  "faq.uninstall.a":
+    "On Windows, uninstall GoAnime from Settings > Apps; the uninstaller also takes it off the PATH. On macOS and Linux, delete the binary with `sudo rm /usr/local/bin/goanime` (on Arch, `yay -R goanime`). Your downloads and history stay in `~/.local/goanime` (Windows keeps the history in `%LOCALAPPDATA%\\GoAnime`) and are not deleted; remove those folders if you want.",
+  "faq.more": "Didn't find your answer?",
+  "faq.more.link": "Ask on Discord",
+
+  "community.title": "Get involved",
+  "community.subtitle":
+    "GoAnime is built by its community. Every bit helps, from reporting a bug to fixing a source that stopped working.",
+  "community.github.title": "Contribute on GitHub",
+  "community.github.body":
+    "Sites change and sources break: fixing one is the most useful contribution. The development guide explains how to start.",
+  "community.github.cta": "Open the repository",
+  "community.discord.title": "Discord",
+  "community.discord.body": "Ask questions, send suggestions, and follow new releases.",
+  "community.discord.cta": "Join the server",
+  "community.mobile.title": "GoAnime Mobile",
+  "community.mobile.body": "The Android version of GoAnime.",
+  "community.mobile.cta": "See the project",
+  "community.star": "If GoAnime is useful to you, a star on GitHub helps other people find it.",
+  "community.star.cta": "Star on GitHub",
+  "community.contributors.title": "Made by {count} people",
+  "community.contributors.body":
+    "Everyone here has code in GoAnime. Your first merged pull request puts you on this list.",
+  "community.contributors.cta": "How to contribute",
+
+  "footer.tagline": "Anime in the terminal.",
+  "footer.by": "Developed by",
+  "footer.contributors": "and contributors.",
+  "footer.logo": "Logo designed by a member of the community.",
+  "footer.license": "MIT License",
+  "footer.releases": "Releases",
+  "footer.project": "Project",
+  "footer.community": "Community",
+  "footer.devguide": "Development guide",
+  "footer.disclaimer":
+    "GoAnime does not host, upload, or distribute any media. It retrieves content that third-party websites make publicly available and is not affiliated with any of them.",
+
+  "download.back": "Back to home",
+  "download.title": "Download GoAnime",
+  "download.subtitle": "Pick your system. The files come straight from the latest release published on GitHub.",
+  "download.version": "Version",
+  "download.published": "Published on",
+  "download.notes": "Release notes",
+  "download.prerelease": "Pre-release",
+  "download.loading": "Checking GitHub for the latest release…",
+  "download.error": "GitHub could not be reached right now. The buttons below always lead to the latest release.",
+  "download.recommended": "Recommended for you",
+  "download.architecture": "Architecture",
+  "download.size": "Size",
+  "download.windows.body": "Windows 10 or later, 64-bit. The installer includes mpv.",
+  "download.windows.primary": "Download the installer",
+  "download.windows.secondary": "Portable version (.zip)",
+  "download.macos.body": "One binary for Apple Silicon and Intel. Requires mpv.",
+  "download.macos.primary": "Download for macOS",
+  "download.macos.secondary": ".tar.gz archive",
+  "download.linux.body": "64-bit distributions, on x86_64 or ARM64. Requires mpv.",
+  "download.linux.primary": "Download the .tar.gz",
+  "download.linux.secondary": "Standalone binary",
+  "download.checksums": "Verify the downloads (SHA-256)",
+  "download.after.title": "After downloading",
+  "download.after.windows": "Run the installer and open a new terminal so the updated PATH is picked up. Then run",
+  "download.after.macos": "In a terminal, in the download folder:",
+  "download.after.linux": "Install mpv with your package manager and, in the download folder:",
+  "download.other.title": "Other ways to install",
+  "download.other.aur": "Arch Linux (AUR)",
+  "download.other.go": "With Go",
+  "download.other.source": "Source code",
+  "download.other.source.body": "Clone the repository and build it. The development guide has the details.",
+}
+
+const es: Dictionary = {
+  "lang.label": "Idioma",
+  "lang.pt": "Português",
+  "lang.en": "English",
+  "lang.es": "Español",
+
+  "nav.features": "Funciones",
+  "nav.demo": "Demo",
+  "nav.install": "Instalación",
+  "nav.download": "Descargar",
+  "nav.faq": "Preguntas",
+  "nav.home": "Inicio de GoAnime",
+  "nav.label": "Navegación principal",
+  "nav.menu.open": "Abrir menú",
+  "nav.menu.close": "Cerrar menú",
+
+  "hero.eyebrow": "Código abierto · Linux, macOS y Windows",
+  "hero.title": "Mira anime desde tu terminal.",
+  "hero.subtitle":
+    "GoAnime busca en varias fuentes a la vez, reproduce el episodio en mpv y recuerda dónde te quedaste. En inglés y portugués de Brasil.",
+  "hero.download": "Descargar GoAnime",
+  "hero.download.windows": "Descargar para Windows",
+  "hero.download.macos": "Descargar para macOS",
+  "hero.download.linux": "Descargar para Linux",
+  "hero.github": "Ver en GitHub",
+  "hero.stars": "estrellas en GitHub",
+  "hero.release": "Mira las novedades",
+
+  "stats.label": "GoAnime en números",
+  "stats.downloads": "descargas en GitHub",
+  "stats.contributors": "colaboradores",
+  "stats.discord": "personas en Discord",
+  "stats.online": "en línea ahora",
+
+  "demo.title": "Míralo en acción",
+  "demo.subtitle":
+    "Una sesión real: la búsqueda, la lista de resultados con detalles y el episodio reproduciéndose en mpv.",
+  "demo.caption": "Grabado con cortos de animación japoneses de dominio público, de 1917 a 1929.",
+  "demo.fallback": "Tu navegador no puede reproducir este video.",
+
+  "features.title": "Qué hace",
+  "features.subtitle": "Todo desde la terminal, en un solo binario.",
+  "features.sources.title": "Varias fuentes a la vez",
+  "features.sources.body": "Busca en todas las fuentes activas en paralelo y pasa a otra cuando una falla.",
+  "features.languages.title": "Inglés y portugués",
+  "features.languages.body": "Anime subtitulado y doblado en ambos idiomas, además de películas y series en portugués.",
+  "features.download.title": "Mira o descarga",
+  "features.download.body":
+    "Elige la calidad y mira en mpv, o descarga un episodio, un rango o la serie completa, con nombres listos para Plex.",
+  "features.resume.title": "Sigue donde lo dejaste",
+  "features.resume.body": "Guarda tu progreso en cada episodio y salta aperturas y cierres automáticamente.",
+  "features.discord.title": "Discord Rich Presence",
+  "features.discord.body": "Muestra en tu perfil de Discord lo que estás viendo.",
+  "features.upscale.title": "Escalado con Anime4K",
+  "features.upscale.body": "Mejora la resolución de videos e imágenes descargados.",
+
+  "install.title": "Instalación",
+  "install.subtitle":
+    "GoAnime reproduce video con mpv. El instalador de Windows ya lo incluye; en otros sistemas, instala mpv antes.",
+  "install.tabs": "Sistema",
+  "install.windows.body": "Descarga y ejecuta el instalador. Instala GoAnime y mpv y agrega ambos al PATH.",
+  "install.windows.button": "Descargar el instalador",
+  "install.windows.note": "¿Prefieres sin instalador? Hay una versión portátil en .zip en la página de descarga.",
+  "install.macos.body":
+    "Instala mpv con Homebrew y luego el binario universal de GoAnime, que funciona en Apple Silicon e Intel.",
+  "install.linux.body": "Instala mpv con el gestor de paquetes de tu distribución y luego GoAnime:",
+  "install.linux.note": "En ARM64, cambia amd64 por arm64.",
+  "install.arch.body": "GoAnime está en el AUR. Con yay o paru:",
+  "install.go.body": "Con Go 1.27 o posterior:",
+  "install.go.note":
+    "El historial de progreso usa SQLite y necesita un compilador C (CGO). Los binarios de las releases ya lo incluyen.",
+  "install.after": "Una vez instalado, ejecuta",
+  "install.update": "Para actualizar:",
+
+  "copy.copy": "Copiar",
+  "copy.copied": "Copiado",
+
+  "usage.title": "Uso",
+  "usage.subtitle": "Los comandos más comunes.",
+  "usage.help": "Ejecuta goanime -h para ver todas las opciones.",
+  "usage.want": "Lo que quieres",
+  "usage.command": "Comando",
+  "usage.interactive": "Abrir la búsqueda interactiva",
+  "usage.direct": "Buscar directamente por nombre",
+  "usage.episode": "Descargar un episodio",
+  "usage.range": "Descargar un rango",
+  "usage.all": "Descargar todos los episodios",
+  "usage.quality": "Elegir la calidad",
+  "usage.source": "Usar una fuente específica",
+  "usage.movie": "Descargar una película",
+  "usage.upscale": "Mejorar un video con Anime4K",
+  "usage.update": "Actualizar GoAnime",
+
+  "faq.title": "Preguntas frecuentes",
+  "faq.subtitle": "Respuestas rápidas sobre la instalación, las descargas y las fuentes.",
+  "faq.windows.q": "Windows dice que el archivo puede ser peligroso. ¿Es seguro?",
+  "faq.windows.a":
+    "SmartScreen avisa sobre programas sin firma digital, y el instalador de GoAnime todavía no tiene una. Cada versión se compila con GitHub Actions a partir del código público, y la página de descarga enlaza los SHA-256 de todos los archivos para que verifiques el tuyo. Para continuar, haz clic en “Más información” y luego en “Ejecutar de todas formas”.",
+  "faq.mpv.q": "¿Por qué necesito mpv?",
+  "faq.mpv.a":
+    "GoAnime encuentra el episodio y le pasa el video a mpv, un reproductor ligero y de código abierto. El instalador de Windows ya incluye mpv; en macOS, instálalo con `brew install mpv`, y en Linux, con el gestor de paquetes de tu distribución.",
+  "faq.downloads.q": "¿Dónde quedan los episodios descargados?",
+  "faq.downloads.a":
+    "En `~/.local/goanime/downloads/anime`, con una carpeta para cada anime y nombres al estilo de Plex, como `Anime - S01E01.mp4`. El `~` es tu carpeta de usuario, también en Windows. Las películas van a `~/.local/goanime/downloads/movies`. Para usar otra carpeta, pasa `-o` seguido de la ruta.",
+  "faq.sources.q": "Una fuente dejó de funcionar. ¿Y ahora?",
+  "faq.sources.a":
+    "Por defecto GoAnime busca en todas las fuentes a la vez y pasa a otra cuando una falla. Los sitios cambian a menudo y los arreglos llegan en las nuevas versiones: actualiza con `goanime --update` (en Arch, `yay -S goanime`). Si el problema sigue, avísanos en Discord o abre un issue en GitHub.",
+  "faq.sources.link": "Abrir un issue",
+  "faq.mobile.q": "¿Funciona en el móvil?",
+  "faq.mobile.a": "GoAnime funciona en Linux, macOS y Windows. Para Android existe GoAnime Mobile, una app aparte.",
+  "faq.mobile.link": "Ver GoAnime Mobile",
+  "faq.uninstall.q": "¿Cómo lo desinstalo?",
+  "faq.uninstall.a":
+    "En Windows, desinstala GoAnime desde Configuración > Aplicaciones; el desinstalador también lo quita del PATH. En macOS y Linux, borra el binario con `sudo rm /usr/local/bin/goanime` (en Arch, `yay -R goanime`). Tus descargas y el historial quedan en `~/.local/goanime` (en Windows, el historial está en `%LOCALAPPDATA%\\GoAnime`) y no se borran; elimina esas carpetas si quieres.",
+  "faq.more": "¿No encontraste tu respuesta?",
+  "faq.more.link": "Pregunta en Discord",
+
+  "community.title": "Participa",
+  "community.subtitle":
+    "GoAnime lo hace su comunidad. Toda ayuda cuenta, desde reportar un error hasta arreglar una fuente que dejó de funcionar.",
+  "community.github.title": "Contribuye en GitHub",
+  "community.github.body":
+    "Los sitios cambian y las fuentes se rompen: arreglar una es la contribución más útil. La guía de desarrollo explica cómo empezar.",
+  "community.github.cta": "Abrir el repositorio",
+  "community.discord.title": "Discord",
+  "community.discord.body": "Haz preguntas, envía sugerencias y sigue las nuevas versiones.",
+  "community.discord.cta": "Unirse al servidor",
+  "community.mobile.title": "GoAnime Mobile",
+  "community.mobile.body": "La versión de GoAnime para Android.",
+  "community.mobile.cta": "Ver el proyecto",
+  "community.star": "Si GoAnime te resulta útil, una estrella en GitHub ayuda a que otras personas lo encuentren.",
+  "community.star.cta": "Dar una estrella",
+  "community.contributors.title": "Hecho por {count} personas",
+  "community.contributors.body":
+    "Cada persona aquí tiene código en GoAnime. Tu primer pull request aceptado te pone en esta lista.",
+  "community.contributors.cta": "Cómo contribuir",
+
+  "footer.tagline": "Anime en la terminal.",
+  "footer.by": "Desarrollado por",
+  "footer.contributors": "y colaboradores.",
+  "footer.logo": "Logo creado por un miembro de la comunidad.",
+  "footer.license": "Licencia MIT",
+  "footer.releases": "Releases",
+  "footer.project": "Proyecto",
+  "footer.community": "Comunidad",
+  "footer.devguide": "Guía de desarrollo",
+  "footer.disclaimer":
+    "GoAnime no aloja, sube ni distribuye ningún contenido. Accede a contenido que sitios de terceros ponen a disposición del público y no está afiliado a ninguno de ellos.",
+
+  "download.back": "Volver al inicio",
+  "download.title": "Descargar GoAnime",
+  "download.subtitle": "Elige tu sistema. Los archivos vienen directo de la última versión publicada en GitHub.",
+  "download.version": "Versión",
+  "download.published": "Publicada el",
+  "download.notes": "Notas de la versión",
+  "download.prerelease": "Prelanzamiento",
+  "download.loading": "Consultando la última versión en GitHub…",
+  "download.error": "No se pudo consultar GitHub ahora. Los botones de abajo llevan siempre a la última versión.",
+  "download.recommended": "Recomendado para ti",
+  "download.architecture": "Arquitectura",
+  "download.size": "Tamaño",
+  "download.windows.body": "Windows 10 o posterior, 64 bits. El instalador ya incluye mpv.",
+  "download.windows.primary": "Descargar el instalador",
+  "download.windows.secondary": "Versión portátil (.zip)",
+  "download.macos.body": "Un solo binario para Apple Silicon e Intel. Requiere mpv.",
+  "download.macos.primary": "Descargar para macOS",
+  "download.macos.secondary": "Archivo .tar.gz",
+  "download.linux.body": "Distribuciones de 64 bits, en x86_64 o ARM64. Requiere mpv.",
+  "download.linux.primary": "Descargar el .tar.gz",
+  "download.linux.secondary": "Binario suelto",
+  "download.checksums": "Verificar las descargas (SHA-256)",
+  "download.after.title": "Después de descargar",
+  "download.after.windows":
+    "Ejecuta el instalador y abre una terminal nueva para que se cargue el PATH actualizado. Luego ejecuta",
+  "download.after.macos": "En una terminal, en la carpeta de descarga:",
+  "download.after.linux": "Instala mpv con tu gestor de paquetes y, en la carpeta de descarga:",
+  "download.other.title": "Otras formas de instalar",
+  "download.other.aur": "Arch Linux (AUR)",
+  "download.other.go": "Con Go",
+  "download.other.source": "Código fuente",
+  "download.other.source.body": "Clona el repositorio y compílalo. La guía de desarrollo tiene los detalles.",
+}
+
+const dictionaries: Record<Language, Dictionary> = { pt, en, es }
 
 type LanguageContextType = {
   language: Language
   setLanguage: (language: Language) => void
-  t: (key: string) => string
-}
-
-const translations = {
-  pt: {
-    // Header
-    "nav.features": "Recursos",
-    "nav.installation": "Instalação",
-    "nav.usage": "Como Usar",
-    "nav.press": "Pressione",
-    "nav.download": "Download",
-
-    // Terminal/Usage Instructions
-    "terminal.universal.command": "go install github.com/alvarorichard/Goanime/cmd/goanime@latest",
-    "terminal.manual.clone": "git clone https://github.com/alvarorichard/GoAnime.git",
-    "terminal.manual.cd": "cd GoAnime",
-    "terminal.manual.install": "go run cmd/goanime/main.go",
-    "terminal.arch.paru": "# Usando paru",
-    "terminal.arch.paru.command": "paru -S goanime",
-    "terminal.arch.yay": "# Usando yay",
-    "terminal.arch.yay.command": "yay -S goanime",
-    "terminal.nixos.comment": "# Execução temporária",
-    "terminal.nixos.command": "nix github:alvarorichard/GoAnime",
-    "terminal.usage.command": "go-anime # Linux/macOS goanime # Windows",
-    "terminal.usage.search": "goanime \"demon slayer\"",
-    "terminal.demo.command": "go-anime \"demon slayer\"",
-    "terminal.demo.searching": "Buscando \"demon slayer\"...",
-    "terminal.demo.found": "Encontrado:",
-    "terminal.demo.anime": "Demon Slayer: Kimetsu no Yaiba",
-    "terminal.demo.loading": "Carregando episódios...",
-    "terminal.demo.episode1": "Episódio 1 - Crueldade",
-    "terminal.demo.episode2": "Episódio 2 - O Treinador Urokodaki Sakonji",
-    "terminal.demo.episode3": "Episódio 3 - Sabito e Makomo",
-    "terminal.demo.select": "Selecione um episódio:",
-    "terminal.demo.starting": "Iniciando MPV...",
-    "terminal.demo.playing": "Reproduzindo:",
-    "terminal.demo.playing.ep": "Demon Slayer - Episódio 1 - Crueldade",
-
-    // Hero
-    "hero.tagline": "Anime no terminal, simples e poderoso",
-    "hero.description":
-      "Um player de anime para terminal construído em Go, que permite buscar, assistir e baixar episódios diretamente no MPV com uma experiência fluida e moderna.",
-    "hero.github": "Ver no GitHub",
-    "hero.install": "Instalar Agora",
-
-    // Features
-    "features.badge": "Recursos Incríveis",
-    "features.title": "Experiência Extraordinária",
-    "features.subtitle": "Descubra o que torna o GoAnime uma ferramenta única para os amantes de anime",
-
-    "features.cli.title": "Interface CLI Elegante",
-    "features.cli.description":
-      "Interface de linha de comando intuitiva e moderna para buscar e assistir animes com facilidade.",
-
-    "features.playback.title": "Reprodução Direta",
-    "features.playback.description":
-      "Reproduza episódios diretamente no MPV sem precisar abrir o navegador ou outros aplicativos.",
-
-    "features.fast.title": "Rápido e Eficiente",
-    "features.fast.description": "Construído em Go para oferecer desempenho excepcional e consumo mínimo de recursos.",
-
-    "features.sources.title": "Múltiplas Fontes",
-    "features.sources.description":
-      "Acesse animes de várias fontes para garantir a melhor qualidade e disponibilidade.",
-
-    "features.opensource.title": "Código Aberto",
-    "features.opensource.description":
-      "Projeto totalmente open source, permitindo contribuições e personalizações da comunidade.",
-
-    "features.download.title": "Download de Episódios",
-    "features.download.description":
-      "Baixe episódios para assistir offline quando e onde quiser, sem depender de conexão com a internet.",
-
-    // Installation
-    "install.badge": "Instalação Simples",
-    "install.title": "Comece em Segundos",
-    "install.subtitle": "Escolha o método de instalação que funciona melhor para você",
-
-    "install.universal.title": "Instalação Universal",
-    "install.universal.description": "Recomendado para a maioria dos usuários (apenas Go necessário)",
-
-    "install.manual.title": "Manual install methods",
-    "install.manual.description": "Clone o repositório e instale manualmente",
-
-    "install.arch.title": "Arch Linux (AUR)",
-    "install.arch.description": "Para usuários do Arch Linux",
-
-    "install.nixos.title": "NixOS (Flakes)",
-    "install.nixos.description": "Para usuários do NixOS",
-
-    "install.learnmore": "Saiba mais",
-
-    // Usage
-    "usage.badge": "Como Usar",
-    "usage.title": "Simples e Intuitivo",
-    "usage.subtitle": "Comandos simples para começar a usar o GoAnime imediatamente",
-
-    "usage.step1.title": "Inicie o GoAnime",
-    "usage.step1.description": "Abra seu terminal e execute o comando para iniciar o GoAnime.",
-
-    "usage.step2.title": "Busque seu anime favorito",
-    "usage.step2.description": "Digite o nome do anime que deseja assistir ou use a busca direta.",
-
-    "usage.step3.title": "Selecione o anime",
-    "usage.step3.description":
-      "Navegue pela lista de resultados usando as setas do teclado e pressione Enter para selecionar.",
-
-    "usage.step4.title": "Escolha o episódio",
-    "usage.step4.description": "Selecione o episódio que deseja assistir da lista apresentada.",
-
-    "usage.step5.title": "Aproveite!",
-    "usage.step5.description": "O episódio será reproduzido automaticamente no MPV. Relaxe e aproveite seu anime!",
-
-    // CTA
-    "cta.badge": "Pronto para começar?",
-    "cta.title": "Experimente o GoAnime Hoje",
-    "cta.subtitle":
-      "Junte-se a milhares de usuários que já estão aproveitando a melhor experiência de anime no terminal.",
-
-    // Footer
-    "footer.developed": "Desenvolvido por",
-
-    // Language
-    language: "Idioma",
-    "language.pt": "Português",
-    "language.en": "Inglês",
-    "language.es": "Espanhol",
-
-    // Download Page
-    "download.back": "Voltar para a página inicial",
-    "download.badge": "Downloads Oficiais",
-    "download.title": "Baixe o GoAnime",
-    "download.subtitle":
-      "Escolha a versão para seu sistema operacional e comece a assistir anime no terminal agora mesmo.",
-    "download.version": "Versão:",
-    "download.file": "Arquivo",
-    "download.loading": "Carregando informações da versão mais recente...",
-    "download.error": "Não foi possível carregar as informações da versão mais recente. Por favor, tente novamente.",
-    "download.retry": "Tentar novamente",
-    "download.instructions": "Após o download, extraia e execute o arquivo conforme as instruções abaixo.",
-
-    "download.mac.title": "macOS",
-    "download.mac.description": "Para macOS 10.13 ou superior (Intel e Apple Silicon)",
-    "download.mac.button": "Baixar para macOS",
-
-    "download.linux.title": "Linux",
-    "download.linux.description": "Para distribuições Linux modernas (64-bit)",
-    "download.linux.button": "Baixar para Linux",
-
-    "download.windows.title": "Windows",
-    "download.windows.description": "Para Windows 10 ou superior (64-bit)",
-    "download.windows.button": "Baixar para Windows",
-
-    "download.alternative.title": "Métodos Alternativos",
-    "download.alternative.subtitle": "Outras formas de obter o GoAnime",
-
-    "download.github.title": "GitHub Releases",
-    "download.github.description": "Baixe versões específicas e veja as notas de lançamento",
-    "download.github.button": "Ver no GitHub",
-
-    "download.source.title": "Código Fonte",
-    "download.source.description": "Clone o repositório e compile você mesmo",
-    "download.source.button": "Baixar Código Fonte",
-
-    "download.instructions.badge": "Guia de Instalação",
-    "download.instructions.title": "Como Instalar",
-    "download.instructions.subtitle": "Siga estas etapas simples para começar a usar o GoAnime",
-    "download.instructions.step1.title": "Baixe o arquivo",
-    "download.instructions.step1.description": "Escolha a versão para seu sistema operacional e faça o download.",
-    "download.instructions.step2.title": "Torne o arquivo executável (Linux/macOS)",
-    "download.instructions.step2.description": "Abra o terminal e execute 'chmod +x ./nome-do-arquivo'.",
-    "download.instructions.step2.command": "chmod +x ./goanime-linux",
-    "download.instructions.step3.title": "Execute o GoAnime",
-    "download.instructions.step3.description": "Execute o arquivo baixado e comece a assistir anime!",
-    "download.instructions.step3.command": "./goanime-linux",
-    "download.instructions.starting": "Iniciando...",
-    "download.instructions.prompt": "Digite o nome do anime que deseja assistir:",
-    "download.instructions.extract": "Extrair o arquivo",
-    "download.instructions.install": "Mover para o PATH do sistema",
-    "download.instructions.step4.title": "Pronto!",
-    "download.instructions.step4.description": "O GoAnime está instalado e pronto para usar. Execute 'goanime' em qualquer terminal.",
-
-    // New download page keys
-    "download.prerelease": "Pré-lançamento",
-    "download.architecture": "Arquitetura",
-    "download.size": "Tamanho",
-    "download.verify": "Verifique seu download:",
-    "download.windows.installer.included": "Instalador com MPV incluído",
-    "download.windows.portable": "Baixar versão portátil (.zip)",
-    "download.aur.title": "Arch Linux (AUR)",
-    "download.aur.description": "Instale diretamente do Arch User Repository usando seu helper AUR favorito.",
-    "download.aur.alternative": "Ou usando paru:",
-
-    // Star on GitHub CTA
-    "star.cta": "Deixe uma estrela no nosso repositório no GitHub!",
-  },
-  en: {
-    // Header
-    "nav.features": "Features",
-    "nav.installation": "Installation",
-    "nav.usage": "How to Use",
-    "nav.press": "Press",
-    "nav.download": "Download",
-
-    // Terminal/Usage Instructions
-    "terminal.universal.command": "go install github.com/alvarorichard/Goanime/cmd/goanime@latest",
-    "terminal.manual.clone": "git clone https://github.com/alvarorichard/GoAnime.git",
-    "terminal.manual.cd": "cd GoAnime",
-    "terminal.manual.install": "go run cmd/goanime/main.go",
-    "terminal.arch.paru": "# Using paru",
-    "terminal.arch.paru.command": "paru -S goanime",
-    "terminal.arch.yay": "# Using yay",
-    "terminal.arch.yay.command": "yay -S goanime",
-    "terminal.nixos.comment": "# Temporary execution",
-    "terminal.nixos.command": "nix github:alvarorichard/GoAnime",
-    "terminal.usage.command": "go-anime # Linux/macOS goanime # Windows",
-    "terminal.usage.search": "goanime \"demon slayer\"",
-    "terminal.demo.command": "go-anime \"demon slayer\"",
-    "terminal.demo.searching": "Searching for \"demon slayer\"...",
-    "terminal.demo.found": "Found:",
-    "terminal.demo.anime": "Demon Slayer: Kimetsu no Yaiba",
-    "terminal.demo.loading": "Loading episodes...",
-    "terminal.demo.episode1": "Episode 1 - Cruelty",
-    "terminal.demo.episode2": "Episode 2 - Trainer Urokodaki Sakonji",
-    "terminal.demo.episode3": "Episode 3 - Sabito and Makomo",
-    "terminal.demo.select": "Select an episode:",
-    "terminal.demo.starting": "Starting MPV...",
-    "terminal.demo.playing": "Playing:",
-    "terminal.demo.playing.ep": "Demon Slayer - Episode 1 - Cruelty",
-
-    // Hero
-    "hero.tagline": "Anime in the terminal, simple and powerful",
-    "hero.description":
-      "An anime player for terminal built in Go, which allows you to search, watch and download episodes directly in MPV with a fluid and modern experience.",
-    "hero.github": "View on GitHub",
-    "hero.install": "Install Now",
-
-    // Features
-    "features.badge": "Amazing Features",
-    "features.title": "Extraordinary Experience",
-    "features.subtitle": "Discover what makes GoAnime a unique tool for anime lovers",
-
-    "features.cli.title": "Elegant CLI Interface",
-    "features.cli.description": "Intuitive and modern command line interface to search and watch anime with ease.",
-
-    "features.playback.title": "Direct Playback",
-    "features.playback.description":
-      "Play episodes directly in MPV without having to open the browser or other applications.",
-
-    "features.fast.title": "Fast and Efficient",
-    "features.fast.description": "Built in Go to offer exceptional performance and minimal resource consumption.",
-
-    "features.sources.title": "Multiple Sources",
-    "features.sources.description": "Access anime from various sources to ensure the best quality and availability.",
-
-    "features.opensource.title": "Open Source",
-    "features.opensource.description":
-      "Fully open source project, allowing community contributions and customizations.",
-
-    "features.download.title": "Episode Download",
-    "features.download.description":
-      "Download episodes to watch offline whenever and wherever you want, without relying on an internet connection.",
-
-    // Installation
-    "install.badge": "Simple Installation",
-    "install.title": "Start in Seconds",
-    "install.subtitle": "Choose the installation method that works best for you",
-
-    "install.universal.title": "Universal Installation",
-    "install.universal.description": "Recommended for most users (only Go required)",
-
-    "install.manual.title": "Manual install methods",
-    "install.manual.description": "Clone the repository and install manually",
-
-    "install.arch.title": "Arch Linux (AUR)",
-    "install.arch.description": "For Arch Linux users",
-
-    "install.nixos.title": "NixOS (Flakes)",
-    "install.nixos.description": "For NixOS users",
-
-    "install.learnmore": "Learn more",
-
-    // Usage
-    "usage.badge": "How to Use",
-    "usage.title": "Simple and Intuitive",
-    "usage.subtitle": "Simple commands to start using GoAnime immediately",
-
-    "usage.step1.title": "Start GoAnime",
-    "usage.step1.description": "Open your terminal and run the command to start GoAnime.",
-
-    "usage.step2.title": "Search for your favorite anime",
-    "usage.step2.description": "Type the name of the anime you want to watch or use direct search.",
-
-    "usage.step3.title": "Select the anime",
-    "usage.step3.description": "Navigate through the results list using the keyboard arrows and press Enter to select.",
-
-    "usage.step4.title": "Choose the episode",
-    "usage.step4.description": "Select the episode you want to watch from the presented list.",
-
-    "usage.step5.title": "Enjoy!",
-    "usage.step5.description": "The episode will be automatically played in MPV. Relax and enjoy your anime!",
-
-    // CTA
-    "cta.badge": "Ready to start?",
-    "cta.title": "Try GoAnime Today",
-    "cta.subtitle": "Join thousands of users who are already enjoying the best anime experience in the terminal.",
-
-    // Footer
-    "footer.developed": "Developed by",
-
-    // Language
-    language: "Language",
-    "language.pt": "Portuguese",
-    "language.en": "English",
-    "language.es": "Spanish",
-
-    // Download Page
-    "download.back": "Back to home",
-    "download.badge": "Official Downloads",
-    "download.title": "Download GoAnime",
-    "download.subtitle":
-      "Choose the version for your operating system and start watching anime in the terminal right now.",
-    "download.version": "Version:",
-    "download.file": "File",
-    "download.loading": "Loading latest version information...",
-    "download.error": "Could not load latest version information. Please try again.",
-    "download.retry": "Try again",
-    "download.instructions": "After downloading, extract and run the file according to the instructions below.",
-
-    "download.mac.title": "macOS",
-    "download.mac.description": "For macOS 10.13 or higher (Intel and Apple Silicon)",
-    "download.mac.button": "Download for macOS",
-
-    "download.linux.title": "Linux",
-    "download.linux.description": "For modern Linux distributions (64-bit)",
-    "download.linux.button": "Download for Linux",
-
-    "download.windows.title": "Windows",
-    "download.windows.description": "For Windows 10 or higher (64-bit)",
-    "download.windows.button": "Download for Windows",
-
-    "download.alternative.title": "Alternative Methods",
-    "download.alternative.subtitle": "Other ways to get GoAnime",
-
-    "download.github.title": "GitHub Releases",
-    "download.github.description": "Download specific versions and view release notes",
-    "download.github.button": "View on GitHub",
-
-    "download.source.title": "Source Code",
-    "download.source.description": "Clone the repository and build it yourself",
-    "download.source.button": "Download Source Code",
-
-    "download.instructions.badge": "Installation Guide",
-    "download.instructions.title": "How to Install",
-    "download.instructions.subtitle": "Follow these simple steps to start using GoAnime",
-    "download.instructions.step1.title": "Download the file",
-    "download.instructions.step1.description": "Choose the version for your operating system and download it.",
-    "download.instructions.step2.title": "Make the file executable (Linux/macOS)",
-    "download.instructions.step2.description": "Open the terminal and run 'chmod +x ./file-name'.",
-    "download.instructions.step2.command": "chmod +x ./goanime-linux",
-    "download.instructions.step3.title": "Run GoAnime",
-    "download.instructions.step3.description": "Execute the downloaded file and start watching anime!",
-    "download.instructions.step3.command": "./goanime-linux",
-    "download.instructions.starting": "Starting...",
-    "download.instructions.prompt": "Type the name of the anime you want to watch:",
-    "download.instructions.extract": "Extract the file",
-    "download.instructions.install": "Move to system PATH",
-    "download.instructions.step4.title": "Done!",
-    "download.instructions.step4.description": "GoAnime is installed and ready to use. Run 'goanime' in any terminal.",
-
-    // New download page keys
-    "download.prerelease": "Pre-release",
-    "download.architecture": "Architecture",
-    "download.size": "Size",
-    "download.verify": "Verify your download:",
-    "download.windows.installer.included": "Installer with MPV included",
-    "download.windows.portable": "Download portable version (.zip)",
-    "download.aur.title": "Arch Linux (AUR)",
-    "download.aur.description": "Install directly from the Arch User Repository using your favorite AUR helper.",
-    "download.aur.alternative": "Or using paru:",
-
-    // Star on GitHub CTA
-    "star.cta": "Leave a star on our GitHub repository!",
-  },
-  es: {
-    // Header
-    "nav.features": "Características",
-    "nav.installation": "Instalación",
-    "nav.usage": "Cómo Usar",
-    "nav.press": "Presiona",
-    "nav.download": "Descargar",
-
-    // Terminal/Usage Instructions
-    "terminal.universal.command": "go install github.com/alvarorichard/Goanime/cmd/goanime@latest",
-    "terminal.manual.clone": "git clone https://github.com/alvarorichard/GoAnime.git",
-    "terminal.manual.cd": "cd GoAnime",
-    "terminal.manual.install": "go run cmd/goanime/main.go",
-    "terminal.arch.paru": "# Usando paru",
-    "terminal.arch.paru.command": "paru -S goanime",
-    "terminal.arch.yay": "# Usando yay",
-    "terminal.arch.yay.command": "yay -S goanime",
-    "terminal.nixos.comment": "# Ejecución temporal",
-    "terminal.nixos.command": "nix github:alvarorichard/GoAnime",
-    "terminal.usage.command": "go-anime # Linux/macOS goanime # Windows",
-    "terminal.usage.search": "goanime \"demon slayer\"",
-    "terminal.demo.command": "go-anime \"demon slayer\"",
-    "terminal.demo.searching": "Buscando \"demon slayer\"...",
-    "terminal.demo.found": "Encontrado:",
-    "terminal.demo.anime": "Demon Slayer: Kimetsu no Yaiba",
-    "terminal.demo.loading": "Cargando episodios...",
-    "terminal.demo.episode1": "Episodio 1 - Crueldad",
-    "terminal.demo.episode2": "Episodio 2 - Entrenador Urokodaki Sakonji",
-    "terminal.demo.episode3": "Episodio 3 - Sabito y Makomo",
-    "terminal.demo.select": "Selecciona un episodio:",
-    "terminal.demo.starting": "Iniciando MPV...",
-    "terminal.demo.playing": "Reproduciendo:",
-    "terminal.demo.playing.ep": "Demon Slayer - Episodio 1 - Crueldad",
-
-    // Hero
-    "hero.tagline": "Anime en la terminal, simple y potente",
-    "hero.description":
-      "Un reproductor de anime para terminal construido en Go, que permite buscar, ver y descargar episodios directamente en MPV con una experiencia fluida y moderna.",
-    "hero.github": "Ver en GitHub",
-    "hero.install": "Instalar Ahora",
-
-    // Features
-    "features.badge": "Características Increíbles",
-    "features.title": "Experiencia Extraordinaria",
-    "features.subtitle": "Descubre lo que hace de GoAnime una herramienta única para los amantes del anime",
-
-    "features.cli.title": "Interfaz CLI Elegante",
-    "features.cli.description":
-      "Interfaz de línea de comandos intuitiva y moderna para buscar y ver anime con facilidad.",
-
-    "features.playback.title": "Reproducción Directa",
-    "features.playback.description":
-      "Reproduce episodios directamente en MPV sin tener que abrir el navegador u otras aplicaciones.",
-
-    "features.fast.title": "Rápido y Eficiente",
-    "features.fast.description":
-      "Construido en Go para ofrecer un rendimiento excepcional y un consumo mínimo de recursos.",
-
-    "features.sources.title": "Múltiples Fuentes",
-    "features.sources.description":
-      "Accede a anime de varias fuentes para garantizar la mejor calidad y disponibilidad.",
-
-    "features.opensource.title": "Código Abierto",
-    "features.opensource.description":
-      "Proyecto totalmente de código abierto, que permite contribuciones y personalizaciones de la comunidad.",
-
-    "features.download.title": "Descarga de Episodios",
-    "features.download.description":
-      "Descarga episodios para verlos sin conexión cuando y donde quieras, sin depender de una conexión a internet.",
-
-    // Installation
-    "install.badge": "Instalación Simple",
-    "install.title": "Comienza en Segundos",
-    "install.subtitle": "Elige el método de instalación que mejor funcione para ti",
-
-    "install.universal.title": "Instalación Universal",
-    "install.universal.description": "Recomendado para la mayoría de los usuarios (solo se requiere Go)",
-
-    "install.manual.title": "Manual install methods",
-    "install.manual.description": "Clona el repositorio e instala manualmente",
-
-    "install.arch.title": "Arch Linux (AUR)",
-    "install.arch.description": "Para usuarios de Arch Linux",
-
-    "install.nixos.title": "NixOS (Flakes)",
-    "install.nixos.description": "Para usuarios de NixOS",
-
-    "install.learnmore": "Saber más",
-
-    // Usage
-    "usage.badge": "Cómo Usar",
-    "usage.title": "Simple e Intuitivo",
-    "usage.subtitle": "Comandos simples para comenzar a usar GoAnime inmediatamente",
-
-    "usage.step1.title": "Inicia GoAnime",
-    "usage.step1.description": "Abre tu terminal y ejecuta el comando para iniciar GoAnime.",
-
-    "usage.step2.title": "Busca tu anime favorito",
-    "usage.step2.description": "Escribe el nombre del anime que deseas ver o usa la búsqueda directa.",
-
-    "usage.step3.title": "Selecciona el anime",
-    "usage.step3.description":
-      "Navega por la lista de resultados usando las flechas del teclado y presiona Enter para seleccionar.",
-
-    "usage.step4.title": "Elige el episodio",
-    "usage.step4.description": "Selecciona el episodio que deseas ver de la lista presentada.",
-
-    "usage.step5.title": "¡Disfruta!",
-    "usage.step5.description": "El episodio se reproducirá automáticamente en MPV. Relájate y disfruta de tu anime!",
-
-    // CTA
-    "cta.badge": "¿Listo para comenzar?",
-    "cta.title": "Prueba GoAnime Hoy",
-    "cta.subtitle":
-      "Únete a miles de usuarios que ya están disfrutando de la mejor experiencia de anime en la terminal.",
-
-    // Footer
-    "footer.developed": "Desarrollado por",
-
-    // Language
-    language: "Idioma",
-    "language.pt": "Portugués",
-    "language.en": "Inglés",
-    "language.es": "Español",
-
-    // Download Page
-    "download.back": "Volver a la página principal",
-    "download.badge": "Descargas Oficiales",
-    "download.title": "Descarga GoAnime",
-    "download.subtitle":
-      "Elige la versión para tu sistema operativo y comienza a ver anime en la terminal ahora mismo.",
-    "download.version": "Versión:",
-    "download.file": "Archivo",
-    "download.loading": "Cargando información de la versión más reciente...",
-    "download.error": "No se pudo cargar la información de la versión más reciente. Por favor, inténtalo de nuevo.",
-    "download.retry": "Intentar de nuevo",
-    "download.instructions":
-      "Después de descargar, extrae y ejecuta el archivo según las instrucciones a continuación.",
-
-    "download.mac.title": "macOS",
-    "download.mac.description": "Para macOS 10.13 o superior (Intel y Apple Silicon)",
-    "download.mac.button": "Descargar para macOS",
-
-    "download.linux.title": "Linux",
-    "download.linux.description": "Para distribuciones Linux modernas (64-bit)",
-    "download.linux.button": "Descargar para Linux",
-
-    "download.windows.title": "Windows",
-    "download.windows.description": "Para Windows 10 o superior (64-bit)",
-    "download.windows.button": "Descargar para Windows",
-
-    "download.alternative.title": "Métodos Alternativos",
-    "download.alternative.subtitle": "Otras formas de obtener GoAnime",
-
-    "download.github.title": "GitHub Releases",
-    "download.github.description": "Descarga versiones específicas y consulta las notas de lanzamiento",
-    "download.github.button": "Ver en GitHub",
-
-    "download.source.title": "Código Fuente",
-    "download.source.description": "Clona el repositorio y compílalo tú mismo",
-    "download.source.button": "Descargar Código Fuente",
-
-    "download.instructions.badge": "Guía de Instalación",
-    "download.instructions.title": "Cómo Instalar",
-    "download.instructions.subtitle": "Sigue estos sencillos pasos para comenzar a usar GoAnime",
-    "download.instructions.step1.title": "Descarga el archivo",
-    "download.instructions.step1.description": "Elige la versión para tu sistema operativo y descárgala.",
-    "download.instructions.step2.title": "Haz el archivo ejecutable (Linux/macOS)",
-    "download.instructions.step2.description": "Abre la terminal y ejecuta 'chmod +x ./nombre-del-archivo'.",
-    "download.instructions.step2.command": "chmod +x ./goanime-linux",
-    "download.instructions.step3.title": "Ejecuta GoAnime",
-    "download.instructions.step3.description": "Ejecuta el archivo descargado y ¡comienza a ver anime!",
-    "download.instructions.step3.command": "./goanime-linux",
-    "download.instructions.starting": "Iniciando...",
-    "download.instructions.prompt": "Escribe el nombre del anime que deseas ver:",
-    "download.instructions.extract": "Extraer el archivo",
-    "download.instructions.install": "Mover al PATH del sistema",
-    "download.instructions.step4.title": "¡Listo!",
-    "download.instructions.step4.description": "GoAnime está instalado y listo para usar. Ejecuta 'goanime' en cualquier terminal.",
-
-    // New download page keys
-    "download.prerelease": "Pre-lanzamiento",
-    "download.architecture": "Arquitectura",
-    "download.size": "Tamaño",
-    "download.verify": "Verifica tu descarga:",
-    "download.windows.installer.included": "Instalador con MPV incluido",
-    "download.windows.portable": "Descargar versión portátil (.zip)",
-    "download.aur.title": "Arch Linux (AUR)",
-    "download.aur.description": "Instala directamente desde el Arch User Repository usando tu helper AUR favorito.",
-    "download.aur.alternative": "O usando paru:",
-
-    // Star on GitHub CTA
-    "star.cta": "¡Deja una estrella en nuestro repositorio de GitHub!",
-  },
+  t: (key: TranslationKey) => string
+  // BCP 47 tag for Intl formatting, such as "pt-BR".
+  locale: string
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
+
+const STORAGE_KEY = "language"
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguageState] = useState<Language>("pt")
 
   useEffect(() => {
-    const savedLanguage = localStorage.getItem("language") as Language
-    if (savedLanguage && ["pt", "en", "es"].includes(savedLanguage)) {
-      setLanguageState(savedLanguage)
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY)
+      if (saved && saved in dictionaries) setLanguageState(saved as Language)
+    } catch {
+      // Storage can be unavailable (private mode); Portuguese stays the default.
     }
   }, [])
 
-  const setLanguage = (newLanguage: Language) => {
-    setLanguageState(newLanguage)
-    localStorage.setItem("language", newLanguage)
-  }
+  const locale = LANGUAGES.find((l) => l.code === language)?.htmlLang ?? "pt-BR"
 
-  const t = (key: string): string => {
-    return (translations[language] as Record<string, string>)[key] || key
-  }
+  useEffect(() => {
+    document.documentElement.lang = locale
+  }, [locale])
 
-  return <LanguageContext.Provider value={{ language, setLanguage, t }}>{children}</LanguageContext.Provider>
+  const setLanguage = useCallback((next: Language) => {
+    setLanguageState(next)
+    try {
+      localStorage.setItem(STORAGE_KEY, next)
+    } catch {
+      // Not persisted; the choice still applies to this visit.
+    }
+  }, [])
+
+  const value = useMemo<LanguageContextType>(
+    () => ({ language, setLanguage, t: (key) => dictionaries[language][key], locale }),
+    [language, setLanguage, locale],
+  )
+
+  return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>
 }
 
 export const useLanguage = (): LanguageContextType => {

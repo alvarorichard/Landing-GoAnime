@@ -16,6 +16,7 @@ import {
 import { Contributors } from "@/components/contributors"
 import { CopyButton } from "@/components/copy-button"
 import { DemoSection } from "@/components/demo-section"
+import { Faq } from "@/components/faq"
 import { Hero } from "@/components/hero"
 import { GitHubIcon } from "@/components/icons"
 import { InstallTabs } from "@/components/install-tabs"
@@ -189,6 +190,14 @@ export default function Home() {
               </div>
             </Reveal>
             <p className="text-sm text-muted-foreground">{t("usage.help")}</p>
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section id="faq" aria-labelledby="faq-title" className="border-t border-border/70 py-16 md:py-28">
+          <div className="container space-y-10">
+            <SectionHeading id="faq-title" title={t("faq.title")} subtitle={t("faq.subtitle")} />
+            <Faq />
           </div>
         </section>
 

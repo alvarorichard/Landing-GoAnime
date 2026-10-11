@@ -41,6 +41,7 @@ export function SiteHeader() {
     { href: "/#features", label: t("nav.features") },
     { href: "/#demo", label: t("nav.demo") },
     { href: "/#install", label: t("nav.install") },
+    { href: "/#faq", label: t("nav.faq") },
     { href: "/download", label: t("nav.download") },
   ]
 

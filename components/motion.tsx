@@ -59,7 +59,7 @@ export function Stagger({
 }: {
   children: React.ReactNode
   className?: string
-  as?: "div" | "ul" | "dl"
+  as?: "div" | "ul"
   gap?: number
 }) {
   const Component = motion[as]

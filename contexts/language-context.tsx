@@ -23,6 +23,7 @@ const pt = {
   "nav.demo": "Demo",
   "nav.install": "Instalação",
   "nav.download": "Download",
+  "nav.faq": "Dúvidas",
   "nav.home": "Início do GoAnime",
   "nav.label": "Navegação principal",
   "nav.menu.open": "Abrir menu",
@@ -41,7 +42,7 @@ const pt = {
   "hero.release": "Veja as novidades",
 
   "stats.label": "O GoAnime em números",
-  "stats.downloads": "downloads",
+  "stats.downloads": "downloads no GitHub",
   "stats.contributors": "contribuidores",
   "stats.discord": "pessoas no Discord",
   "stats.online": "online agora",
@@ -103,6 +104,30 @@ const pt = {
   "usage.movie": "Baixar um filme",
   "usage.upscale": "Melhorar um vídeo com Anime4K",
   "usage.update": "Atualizar o GoAnime",
+
+  "faq.title": "Perguntas frequentes",
+  "faq.subtitle": "Respostas rápidas sobre instalação, downloads e fontes.",
+  "faq.windows.q": "O Windows diz que o arquivo pode ser perigoso. É seguro?",
+  "faq.windows.a":
+    "O SmartScreen avisa sobre programas sem assinatura digital, e o instalador do GoAnime ainda não tem uma. Cada versão é compilada pelo GitHub Actions a partir do código público, e a página de download traz o SHA-256 de todos os arquivos para você conferir o seu. Para continuar, clique em “Mais informações” e depois em “Executar assim mesmo”.",
+  "faq.mpv.q": "Por que preciso do mpv?",
+  "faq.mpv.a":
+    "O GoAnime encontra o episódio e entrega o vídeo ao mpv, um reprodutor leve e de código aberto. O instalador do Windows já traz o mpv; no macOS, instale com `brew install mpv`, e no Linux, pelo gerenciador de pacotes da sua distribuição.",
+  "faq.downloads.q": "Onde ficam os episódios baixados?",
+  "faq.downloads.a":
+    "Em `~/.local/goanime/downloads/anime`, com uma pasta para cada anime e nomes no padrão do Plex, como `Anime - S01E01.mp4`. O `~` é a sua pasta de usuário, também no Windows. Filmes vão para `~/.local/goanime/downloads/movies`. Para usar outra pasta, passe `-o` seguido do caminho.",
+  "faq.sources.q": "Uma fonte parou de funcionar. E agora?",
+  "faq.sources.a":
+    "Por padrão o GoAnime pesquisa em todas as fontes ao mesmo tempo e passa para outra quando uma falha. Os sites mudam com frequência, e os consertos chegam nas novas versões: atualize com `goanime --update` (no Arch, `yay -S goanime`). Se o problema continuar, avise no Discord ou abra uma issue no GitHub.",
+  "faq.sources.link": "Abrir uma issue",
+  "faq.mobile.q": "Funciona no celular?",
+  "faq.mobile.a": "O GoAnime roda em Linux, macOS e Windows. Para Android, existe o GoAnime Mobile, um app separado.",
+  "faq.mobile.link": "Ver o GoAnime Mobile",
+  "faq.uninstall.q": "Como desinstalo?",
+  "faq.uninstall.a":
+    "No Windows, desinstale o GoAnime em Configurações > Aplicativos; o desinstalador também o tira do PATH. No macOS e no Linux, apague o binário com `sudo rm /usr/local/bin/goanime` (no Arch, `yay -R goanime`). Seus downloads e o histórico ficam em `~/.local/goanime` (o histórico do Windows, em `%LOCALAPPDATA%\\GoAnime`) e não são apagados; remova essas pastas se quiser.",
+  "faq.more": "Não achou sua resposta?",
+  "faq.more.link": "Pergunte no Discord",
 
   "community.title": "Participe",
   "community.subtitle":
@@ -183,6 +208,7 @@ const en: Dictionary = {
   "nav.demo": "Demo",
   "nav.install": "Installation",
   "nav.download": "Download",
+  "nav.faq": "FAQ",
   "nav.home": "GoAnime home",
   "nav.label": "Main navigation",
   "nav.menu.open": "Open menu",
@@ -201,7 +227,7 @@ const en: Dictionary = {
   "hero.release": "See what's new",
 
   "stats.label": "GoAnime in numbers",
-  "stats.downloads": "downloads",
+  "stats.downloads": "downloads on GitHub",
   "stats.contributors": "contributors",
   "stats.discord": "people on Discord",
   "stats.online": "online now",
@@ -262,6 +288,30 @@ const en: Dictionary = {
   "usage.movie": "Download a movie",
   "usage.upscale": "Upscale a video with Anime4K",
   "usage.update": "Update GoAnime",
+
+  "faq.title": "Frequently asked questions",
+  "faq.subtitle": "Quick answers about installing, downloads and sources.",
+  "faq.windows.q": "Windows says the file might be dangerous. Is it safe?",
+  "faq.windows.a":
+    "SmartScreen warns about programs without a digital signature, and the GoAnime installer doesn't have one yet. Every release is built by GitHub Actions from the public source code, and the download page links the SHA-256 checksums of every file so you can verify yours. To continue, click “More info” and then “Run anyway”.",
+  "faq.mpv.q": "Why do I need mpv?",
+  "faq.mpv.a":
+    "GoAnime finds the episode and hands the video to mpv, a lightweight open-source player. The Windows installer already includes mpv; on macOS, install it with `brew install mpv`, and on Linux, with your distribution's package manager.",
+  "faq.downloads.q": "Where do downloaded episodes go?",
+  "faq.downloads.a":
+    "To `~/.local/goanime/downloads/anime`, with a folder for each anime and Plex-style names such as `Anime - S01E01.mp4`. The `~` is your user folder, on Windows too. Movies go to `~/.local/goanime/downloads/movies`. To use another folder, pass `-o` followed by the path.",
+  "faq.sources.q": "A source stopped working. What now?",
+  "faq.sources.a":
+    "By default GoAnime searches every source at once and falls back to another when one fails. Sites change often, and fixes ship in new releases: update with `goanime --update` (on Arch, `yay -S goanime`). If the problem persists, tell us on Discord or open an issue on GitHub.",
+  "faq.sources.link": "Open an issue",
+  "faq.mobile.q": "Does it work on phones?",
+  "faq.mobile.a": "GoAnime runs on Linux, macOS and Windows. For Android, there is GoAnime Mobile, a separate app.",
+  "faq.mobile.link": "See GoAnime Mobile",
+  "faq.uninstall.q": "How do I uninstall it?",
+  "faq.uninstall.a":
+    "On Windows, uninstall GoAnime from Settings > Apps; the uninstaller also takes it off the PATH. On macOS and Linux, delete the binary with `sudo rm /usr/local/bin/goanime` (on Arch, `yay -R goanime`). Your downloads and history stay in `~/.local/goanime` (Windows keeps the history in `%LOCALAPPDATA%\\GoAnime`) and are not deleted; remove those folders if you want.",
+  "faq.more": "Didn't find your answer?",
+  "faq.more.link": "Ask on Discord",
 
   "community.title": "Get involved",
   "community.subtitle":
@@ -338,6 +388,7 @@ const es: Dictionary = {
   "nav.demo": "Demo",
   "nav.install": "Instalación",
   "nav.download": "Descargar",
+  "nav.faq": "Preguntas",
   "nav.home": "Inicio de GoAnime",
   "nav.label": "Navegación principal",
   "nav.menu.open": "Abrir menú",
@@ -356,7 +407,7 @@ const es: Dictionary = {
   "hero.release": "Mira las novedades",
 
   "stats.label": "GoAnime en números",
-  "stats.downloads": "descargas",
+  "stats.downloads": "descargas en GitHub",
   "stats.contributors": "colaboradores",
   "stats.discord": "personas en Discord",
   "stats.online": "en línea ahora",
@@ -419,6 +470,30 @@ const es: Dictionary = {
   "usage.movie": "Descargar una película",
   "usage.upscale": "Mejorar un video con Anime4K",
   "usage.update": "Actualizar GoAnime",
+
+  "faq.title": "Preguntas frecuentes",
+  "faq.subtitle": "Respuestas rápidas sobre la instalación, las descargas y las fuentes.",
+  "faq.windows.q": "Windows dice que el archivo puede ser peligroso. ¿Es seguro?",
+  "faq.windows.a":
+    "SmartScreen avisa sobre programas sin firma digital, y el instalador de GoAnime todavía no tiene una. Cada versión se compila con GitHub Actions a partir del código público, y la página de descarga enlaza los SHA-256 de todos los archivos para que verifiques el tuyo. Para continuar, haz clic en “Más información” y luego en “Ejecutar de todas formas”.",
+  "faq.mpv.q": "¿Por qué necesito mpv?",
+  "faq.mpv.a":
+    "GoAnime encuentra el episodio y le pasa el video a mpv, un reproductor ligero y de código abierto. El instalador de Windows ya incluye mpv; en macOS, instálalo con `brew install mpv`, y en Linux, con el gestor de paquetes de tu distribución.",
+  "faq.downloads.q": "¿Dónde quedan los episodios descargados?",
+  "faq.downloads.a":
+    "En `~/.local/goanime/downloads/anime`, con una carpeta para cada anime y nombres al estilo de Plex, como `Anime - S01E01.mp4`. El `~` es tu carpeta de usuario, también en Windows. Las películas van a `~/.local/goanime/downloads/movies`. Para usar otra carpeta, pasa `-o` seguido de la ruta.",
+  "faq.sources.q": "Una fuente dejó de funcionar. ¿Y ahora?",
+  "faq.sources.a":
+    "Por defecto GoAnime busca en todas las fuentes a la vez y pasa a otra cuando una falla. Los sitios cambian a menudo y los arreglos llegan en las nuevas versiones: actualiza con `goanime --update` (en Arch, `yay -S goanime`). Si el problema sigue, avísanos en Discord o abre un issue en GitHub.",
+  "faq.sources.link": "Abrir un issue",
+  "faq.mobile.q": "¿Funciona en el móvil?",
+  "faq.mobile.a": "GoAnime funciona en Linux, macOS y Windows. Para Android existe GoAnime Mobile, una app aparte.",
+  "faq.mobile.link": "Ver GoAnime Mobile",
+  "faq.uninstall.q": "¿Cómo lo desinstalo?",
+  "faq.uninstall.a":
+    "En Windows, desinstala GoAnime desde Configuración > Aplicaciones; el desinstalador también lo quita del PATH. En macOS y Linux, borra el binario con `sudo rm /usr/local/bin/goanime` (en Arch, `yay -R goanime`). Tus descargas y el historial quedan en `~/.local/goanime` (en Windows, el historial está en `%LOCALAPPDATA%\\GoAnime`) y no se borran; elimina esas carpetas si quieres.",
+  "faq.more": "¿No encontraste tu respuesta?",
+  "faq.more.link": "Pregunta en Discord",
 
   "community.title": "Participa",
   "community.subtitle":

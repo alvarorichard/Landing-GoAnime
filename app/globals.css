@@ -187,6 +187,24 @@
   animation: glow-pulse 6s ease-in-out infinite;
 }
 
+/* FAQ answers slide open in browsers that can animate to height: auto; the
+   others open them at once. */
+@supports (interpolate-size: allow-keywords) {
+  .faq-item {
+    interpolate-size: allow-keywords;
+  }
+  .faq-item::details-content {
+    block-size: 0;
+    overflow: hidden;
+    transition:
+      block-size 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      content-visibility 0.35s allow-discrete;
+  }
+  .faq-item[open]::details-content {
+    block-size: auto;
+  }
+}
+
 @property --beam-angle {
   syntax: "<angle>";
   initial-value: 0deg;
@@ -236,5 +254,8 @@
   .btn-shine:hover::after,
   .animate-glow {
     animation: none !important;
+  }
+  .faq-item::details-content {
+    transition: none !important;
   }
 }

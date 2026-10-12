@@ -3,7 +3,7 @@
 import { useRef } from "react"
 import Link from "next/link"
 import { ArrowRight, ArrowUpRight, Download, Smartphone, Star } from "lucide-react"
-import { BrandMark } from "@/components/brand-mark"
+import { Dragon } from "@/components/dragon"
 import { GitHubIcon } from "@/components/icons"
 import { MaskedWords, gsap, prefersReducedMotion, useGSAP } from "@/components/motion"
 import { useLanguage } from "@/contexts/language-context"
@@ -64,7 +64,8 @@ export function Hero() {
         )
         .from(q("[data-status]"), { autoAlpha: 0, yPercent: 100, duration: 0.9, clearProps: "transform" }, 0.7)
 
-      // Afterwards the dragon breathes and the dots turn, slowly.
+      // Afterwards the dragon floats (it breathes and blinks on its own, see
+      // Dragon) and the dots turn, slowly.
       gsap.to(q("[data-float]"), { y: -12, duration: 3.2, ease: "sine.inOut", yoyo: true, repeat: -1 })
       gsap.to(q("[data-sun]"), { rotation: "+=360", duration: 180, ease: "none", repeat: -1, delay: 1.8 })
 
@@ -141,12 +142,7 @@ export function Hero() {
             <div data-tilt="" className="w-[min(60vw,15rem)] sm:w-[19rem] lg:w-[min(92%,520px)]">
               <div data-float="">
                 <div data-dragon="" data-intro="">
-                  <BrandMark
-                    size={520}
-                    loading="eager"
-                    fetchPriority="high"
-                    className="h-auto w-full drop-shadow-[0_28px_50px_rgba(0,0,0,0.55)]"
-                  />
+                  <Dragon className="block h-auto w-full drop-shadow-[0_28px_50px_rgba(0,0,0,0.55)]" />
                 </div>
               </div>
             </div>

@@ -74,7 +74,10 @@ English and Spanish versions.
 
 ## Assets
 
-- The dragon mark was designed by a member of the GoAnime community.
+- The dragon mark was designed by a member of the GoAnime community. The
+  hero animates it from vector layers (`components/dragon-paths.ts`) traced
+  from `public/brand/goanime-mark.png`; when the mark changes, trace it again
+  with `uv run scripts/trace-mark.py`.
 - The demo video is recorded from the GoAnime repository with
   [VHS](https://github.com/charmbracelet/vhs), using
   [`docs/demo/demo.tape`](https://github.com/alvarorichard/GoAnime/tree/dev/docs/demo)

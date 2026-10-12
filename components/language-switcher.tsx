@@ -1,29 +1,51 @@
 "use client"
 
-import { ChevronDown, Globe } from "lucide-react"
-import { LANGUAGES, useLanguage, type Language } from "@/contexts/language-context"
+import type { MouseEvent } from "react"
+import { usePathname } from "next/navigation"
+import { useLanguage } from "@/contexts/language-context"
+import { LANGUAGES, isLanguage, localizedPath, type Language } from "@/lib/i18n"
+import { cn } from "@/lib/utils"
 
-// A native select: keyboard, screen reader and mobile pickers work without
-// any custom menu code.
-export function LanguageSwitcher() {
+// PT · EN · ES, all three in sight, so changing language is one tap. Each is
+// a real link to the same page in that language; a plain click goes through
+// setLanguage, which also remembers the choice.
+export function LanguageSwitcher({ className }: { className?: string }) {
   const { language, setLanguage, t } = useLanguage()
+  const pathname = usePathname()
+
+  // The page without any language prefix. The Portuguese pages can report
+  // their internal /pt path, so that prefix goes too.
+  const [, first, ...rest] = pathname.split("/")
+  const page = isLanguage(first) ? `/${rest.join("/")}` : pathname
+
+  const onClick = (e: MouseEvent<HTMLAnchorElement>, code: Language) => {
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
+    e.preventDefault()
+    if (code !== language) setLanguage(code)
+  }
 
   return (
-    <label className="relative inline-flex h-9 items-center rounded-md border border-border text-sm text-muted-foreground transition-colors focus-within:ring-2 focus-within:ring-ring hover:border-foreground/30 hover:text-foreground">
-      <span className="sr-only">{t("lang.label")}</span>
-      <Globe className="pointer-events-none absolute left-2.5 h-4 w-4" aria-hidden="true" />
-      <select
-        value={language}
-        onChange={(e) => setLanguage(e.target.value as Language)}
-        className="h-full cursor-pointer appearance-none rounded-md bg-transparent pl-8 pr-7 outline-hidden"
-      >
-        {LANGUAGES.map(({ code }) => (
-          <option key={code} value={code} className="bg-popover text-popover-foreground">
-            {t(`lang.${code}`)}
-          </option>
-        ))}
-      </select>
-      <ChevronDown className="pointer-events-none absolute right-2 h-3.5 w-3.5 opacity-60" aria-hidden="true" />
-    </label>
+    <div role="group" aria-label={t("lang.label")} className={cn("flex border border-line", className)}>
+      {LANGUAGES.map(({ code, htmlLang }) => {
+        const current = code === language
+        return (
+          <a
+            key={code}
+            href={localizedPath(code, page)}
+            hrefLang={htmlLang}
+            lang={htmlLang}
+            aria-current={current ? "true" : undefined}
+            onClick={(e) => onClick(e, code)}
+            className={cn(
+              "inline-flex h-11 min-w-11 flex-1 items-center justify-center px-3 font-mono text-xs font-medium tracking-[0.08em] transition-colors lg:h-9",
+              current ? "bg-paper text-ink" : "text-muted-foreground hover:bg-raised hover:text-foreground",
+            )}
+          >
+            <span aria-hidden="true">{code.toUpperCase()}</span>
+            <span className="sr-only">{t(`lang.${code}`)}</span>
+          </a>
+        )
+      })}
+    </div>
   )
 }

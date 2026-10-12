@@ -2,11 +2,9 @@
 
 import { useRef, useState, type KeyboardEvent } from "react"
 import Link from "next/link"
-import { AnimatePresence, motion } from "framer-motion"
 import { Download } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { CodeBlock } from "@/components/code-block"
-import { EASE } from "@/components/motion"
+import { gsap, prefersReducedMotion, useGSAP } from "@/components/motion"
 import { useLanguage } from "@/contexts/language-context"
 import { usePlatform } from "@/hooks/use-platform"
 import { LATEST_RELEASE_URL } from "@/lib/releases"
@@ -14,11 +12,12 @@ import { cn } from "@/lib/utils"
 
 type TabId = "windows" | "macos" | "linux" | "arch" | "go"
 
-const TABS: { id: TabId; label: string }[] = [
+// short is the label on phones, where all five have to fit across.
+const TABS: { id: TabId; label: string; short?: string }[] = [
   { id: "windows", label: "Windows" },
   { id: "macos", label: "macOS" },
   { id: "linux", label: "Linux" },
-  { id: "arch", label: "Arch Linux" },
+  { id: "arch", label: "Arch Linux", short: "Arch" },
   { id: "go", label: "Go" },
 ]
 
@@ -34,11 +33,14 @@ sudo install goanime-linux-amd64 /usr/local/bin/goanime`,
   go: "go install github.com/alvarorichard/Goanime/cmd/goanime@latest",
 }
 
+// A terminal panel with one tab per way to install. It opens on the
+// visitor's own system; on a phone the tabs scroll sideways.
 export function InstallTabs() {
-  const { t } = useLanguage()
+  const { t, href } = useLanguage()
   const platform = usePlatform()
   const [picked, setPicked] = useState<TabId | null>(null)
   const active: TabId = picked ?? platform ?? "windows"
+  const panel = useRef<HTMLDivElement>(null)
   const tabRefs = useRef<Record<TabId, HTMLButtonElement | null>>({
     windows: null,
     macos: null,
@@ -46,6 +48,29 @@ export function InstallTabs() {
     arch: null,
     go: null,
   })
+
+  // The new tab's content rises in, but only when the visitor picked it, not
+  // when the page preselects their system.
+  useGSAP(
+    () => {
+      if (!picked || !panel.current || prefersReducedMotion()) return
+      gsap.from(panel.current.children, {
+        y: 12,
+        opacity: 0,
+        duration: 0.5,
+        stagger: 0.06,
+        ease: "power3.out",
+        clearProps: "transform,opacity",
+      })
+    },
+    { dependencies: [picked], scope: panel },
+  )
+
+  const pick = (id: TabId) => {
+    setPicked(id)
+    // Keep the chosen tab in view in the sideways-scrolling row.
+    tabRefs.current[id]?.scrollIntoView({ block: "nearest", inline: "nearest" })
+  }
 
   // Arrow keys move between tabs, as the WAI-ARIA tabs pattern expects.
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -57,17 +82,17 @@ export function InstallTabs() {
     if (e.key === "End") next = TABS.length - 1
     if (next < 0) return
     e.preventDefault()
-    setPicked(TABS[next].id)
+    pick(TABS[next].id)
     tabRefs.current[TABS[next].id]?.focus()
   }
 
   return (
-    <div className="min-w-0 space-y-6">
+    <div className="border-2 border-paper bg-background shadow-[6px_6px_0_var(--border)] sm:shadow-[10px_10px_0_var(--border)]">
       <div
         role="tablist"
         aria-label={t("install.tabs")}
         onKeyDown={onKeyDown}
-        className="relative isolate flex gap-1 overflow-x-auto rounded-lg border border-border bg-card/60 p-1"
+        className="flex overflow-x-auto border-b-2 border-paper [scrollbar-width:none]"
       >
         {TABS.map((tab) => {
           const selected = tab.id === active
@@ -81,84 +106,78 @@ export function InstallTabs() {
               role="tab"
               id={`install-tab-${tab.id}`}
               aria-selected={selected}
-              aria-controls={`install-panel-${tab.id}`}
+              aria-controls="install-panel"
               tabIndex={selected ? 0 : -1}
-              onClick={() => setPicked(tab.id)}
+              onClick={() => pick(tab.id)}
               className={cn(
-                "relative shrink-0 rounded-md px-3.5 py-2.5 text-sm transition-colors md:py-2",
-                selected ? "text-foreground" : "text-muted-foreground hover:text-foreground",
+                "h-12 flex-1 shrink-0 whitespace-nowrap border-r border-border px-2.5 font-mono text-xs tracking-[0.04em] transition-colors last:border-r-0 sm:flex-none sm:px-5 sm:text-[13px] sm:tracking-[0.06em] sm:last:border-r",
+                selected ? "bg-paper text-ink" : "text-muted-foreground hover:bg-raised hover:text-foreground",
               )}
             >
-              {/* The highlight slides between tabs instead of jumping. */}
-              {selected && (
-                <motion.span
-                  layoutId="install-tab-pill"
-                  className="absolute inset-0 -z-10 rounded-md bg-secondary"
-                  transition={{ type: "spring", stiffness: 420, damping: 34 }}
-                />
+              {tab.short ? (
+                <>
+                  <span className="sm:hidden">{tab.short}</span>
+                  <span className="hidden sm:inline">{tab.label}</span>
+                </>
+              ) : (
+                tab.label
               )}
-              {tab.label}
             </button>
           )
         })}
       </div>
 
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.div
-          key={active}
-          role="tabpanel"
-          id={`install-panel-${active}`}
-          aria-labelledby={`install-tab-${active}`}
-          tabIndex={0}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -6 }}
-          transition={{ duration: 0.25, ease: EASE }}
-          className="space-y-4 rounded-md"
-        >
-          {active === "windows" && (
-            <>
-              <p className="text-muted-foreground">{t("install.windows.body")}</p>
-              <Button asChild size="lg" className="btn-shine h-12 w-full sm:w-auto">
-                <Link href="/download">
-                  <Download aria-hidden="true" />
-                  {t("install.windows.button")}
-                </Link>
-              </Button>
-              <p className="text-sm text-muted-foreground">{t("install.windows.note")}</p>
-            </>
-          )}
-          {active === "macos" && (
-            <>
-              <p className="text-muted-foreground">{t("install.macos.body")}</p>
-              <CodeBlock code={COMMANDS.macos} />
-            </>
-          )}
-          {active === "linux" && (
-            <>
-              <p className="text-muted-foreground">{t("install.linux.body")}</p>
-              <CodeBlock code={COMMANDS.linux} />
-              <p className="text-sm text-muted-foreground">{t("install.linux.note")}</p>
-            </>
-          )}
-          {active === "arch" && (
-            <>
-              <p className="text-muted-foreground">{t("install.arch.body")}</p>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <CodeBlock code="yay -S goanime" />
-                <CodeBlock code="paru -S goanime" />
-              </div>
-            </>
-          )}
-          {active === "go" && (
-            <>
-              <p className="text-muted-foreground">{t("install.go.body")}</p>
-              <CodeBlock code={COMMANDS.go} />
-              <p className="text-sm text-muted-foreground">{t("install.go.note")}</p>
-            </>
-          )}
-        </motion.div>
-      </AnimatePresence>
+      <div
+        ref={panel}
+        role="tabpanel"
+        id="install-panel"
+        aria-labelledby={`install-tab-${active}`}
+        tabIndex={0}
+        className="space-y-4 p-4 sm:space-y-5 sm:p-7"
+      >
+        {active === "windows" && (
+          <>
+            <p className="text-soft">{t("install.windows.body")}</p>
+            <Link
+              href={href("/download")}
+              className="btn-crimson flex h-13 items-center justify-center gap-2.5 px-5 font-semibold sm:inline-flex"
+            >
+              <Download className="h-[18px] w-[18px]" aria-hidden="true" />
+              {t("install.windows.button")}
+            </Link>
+            <p className="text-sm text-subtle">{t("install.windows.note")}</p>
+          </>
+        )}
+        {active === "macos" && (
+          <>
+            <p className="text-soft">{t("install.macos.body")}</p>
+            <CodeBlock code={COMMANDS.macos} />
+          </>
+        )}
+        {active === "linux" && (
+          <>
+            <p className="text-soft">{t("install.linux.body")}</p>
+            <CodeBlock code={COMMANDS.linux} />
+            <p className="text-sm text-subtle">{t("install.linux.note")}</p>
+          </>
+        )}
+        {active === "arch" && (
+          <>
+            <p className="text-soft">{t("install.arch.body")}</p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <CodeBlock code="yay -S goanime" />
+              <CodeBlock code="paru -S goanime" />
+            </div>
+          </>
+        )}
+        {active === "go" && (
+          <>
+            <p className="text-soft">{t("install.go.body")}</p>
+            <CodeBlock code={COMMANDS.go} />
+            <p className="text-sm text-subtle">{t("install.go.note")}</p>
+          </>
+        )}
+      </div>
     </div>
   )
 }

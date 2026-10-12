@@ -69,9 +69,10 @@ export const fallbackLinks = {
   linux: (arch: LinuxArch) => `${LATEST_RELEASE_URL}/download/goanime-linux-${arch}.tar.gz`,
 }
 
-export function formatSize(bytes: number): string {
+export function formatSize(bytes: number, locale?: string): string {
   if (!bytes) return ""
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+  const megabytes = new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 })
+  return `${megabytes.format(bytes / (1024 * 1024))} MB`
 }
 
 // Best guess at the visitor's operating system, for preselecting downloads.

@@ -2,15 +2,15 @@
 
 import type React from "react"
 import { ArrowUpRight } from "lucide-react"
-import { CountUp, Stagger, StaggerItem } from "@/components/motion"
+import { CountUp, Stagger } from "@/components/motion"
 import { useLanguage } from "@/contexts/language-context"
 import { useProject } from "@/contexts/project-context"
 import { links } from "@/lib/links"
 import { formatCount } from "@/lib/utils"
 
-// A strip of live numbers under the hero, each linking to where it comes
-// from. Each one is left out when its API could not be reached, and the
-// strip disappears if none could.
+// The live numbers under the hero, two by two on a phone and in a row from
+// lg, each linking to where it comes from. Each one is left out when its API
+// could not be reached, and the grid disappears if none could.
 export function ProjectStats() {
   const { t, locale } = useLanguage()
   const { stars, downloads, contributors, discord } = useProject()
@@ -27,11 +27,8 @@ export function ProjectStats() {
       value: discord.members,
       href: links.discord,
       extra: (
-        <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-          <span className="relative flex h-2 w-2" aria-hidden="true">
-            <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60 motion-safe:animate-ping" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
-          </span>
+        <span className="inline-flex items-center gap-2 font-mono text-xs text-subtle">
+          <span aria-hidden="true" className="h-1.5 w-1.5 animate-pulse rounded-full bg-brand" />
           {formatCount(discord.online, locale)} {t("stats.online")}
         </span>
       ),
@@ -40,25 +37,31 @@ export function ProjectStats() {
   if (stats.length === 0) return null
 
   return (
-    <section aria-label={t("stats.label")}>
-      <div className="container pb-16 md:pb-20">
-        <Stagger as="ul" className="grid grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-4">
-          {stats.map(({ label, value, href, extra }) => (
-            <StaggerItem key={label} as="li" className="md:border-l md:pl-6 md:first:border-0 md:first:pl-0">
-              <a href={href} target="_blank" rel="noopener noreferrer" className="group block space-y-1 rounded-md">
-                <span className="block text-3xl font-semibold tracking-tight tabular-nums md:text-4xl">
-                  <CountUp value={value} format={(n) => formatCount(n, locale)} />
-                </span>
-                <span className="flex items-center gap-1 text-sm text-muted-foreground transition-colors group-hover:text-foreground">
-                  {label}
+    <section aria-label={t("stats.label")} className="pb-16 sm:pb-20 lg:pb-28">
+      <div className="container">
+        <Stagger as="ul" className="grid grid-cols-2 border-l border-t border-border lg:grid-cols-4">
+          {stats.map(({ label, value, href, extra }, i) => (
+            <li key={label} className="border-b border-r border-border">
+              <a
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex h-full flex-col gap-3 p-4 transition-colors hover:bg-card sm:gap-4 sm:p-6 lg:p-7"
+              >
+                <span className="flex items-center justify-between font-mono text-xs tracking-[0.14em] text-brand">
+                  {String(i + 1).padStart(2, "0")}
                   <ArrowUpRight
                     aria-hidden="true"
-                    className="h-3.5 w-3.5 transition duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 md:opacity-0 md:group-hover:opacity-100 md:group-focus-visible:opacity-100"
+                    className="h-4 w-4 text-subtle transition duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-foreground"
                   />
                 </span>
+                <span className="whitespace-nowrap font-display text-[clamp(1.6rem,7.4vw,2.6rem)] leading-none lg:text-[2.75rem]">
+                  <CountUp value={value} format={(n) => formatCount(n, locale)} />
+                </span>
+                <span className="text-sm text-muted-foreground sm:text-[15px]">{label}</span>
                 {extra}
               </a>
-            </StaggerItem>
+            </li>
           ))}
         </Stagger>
       </div>

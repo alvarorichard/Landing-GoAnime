@@ -44,24 +44,32 @@ is enough, since everything it reads is public.
 
 | Path | What it holds |
 | --- | --- |
-| `app/page.tsx` | Home page |
-| `app/download/page.tsx` | Download page |
-| `app/opengraph-image.tsx` | Link preview image, rendered at build time |
-| `contexts/language-context.tsx` | All text, in Portuguese, English and Spanish |
+| `app/[lang]/page.tsx` | Home page, one copy per language |
+| `app/[lang]/download/page.tsx` | Download page |
+| `app/[lang]/opengraph-image.tsx` | Link preview image, rendered at build time |
+| `app/globals.css` | Colors, fonts, and the buttons, cards and halftones the pages share |
+| `lib/i18n.ts` | Languages, their URLs, and all text in Portuguese, English and Spanish |
 | `lib/releases.ts` | Picks the right files out of a GoAnime release |
 | `lib/project.ts` | Fetches the live numbers shown on the site |
-| `components/motion.tsx` | Reveal, stagger, count-up and spotlight animations |
-| `components/` | Hero, stats, contributors, header, footer, install tabs, code blocks, OS icons |
+| `components/motion.tsx` | GSAP setup and the shared reveal, stagger, headline and count-up animations |
+| `components/` | One file per section of the home page, plus header, footer, download cards, code blocks, icons |
 | `public/brand/` | The GoAnime mark |
 | `public/demo/` | The demo video and its poster |
 
-Animations use framer-motion for anything driven by scroll, pointer or
-layout, and CSS (`app/globals.css`) for ambient loops. Both stop for visitors
-who ask the system for reduced motion, and none of them re-render React on
-pointer movement or scroll.
+The look is a manga panel on a terminal: ink, the mark's pale blue-white and
+crimson, square corners and hard offset shadows, Dela Gothic One for headlines
+and IBM Plex for the rest. Layouts are written phone first, with `sm`, `md`
+and `lg` adding to them.
+
+Animations use [GSAP](https://gsap.com) with ScrollTrigger, through
+`@gsap/react`'s `useGSAP`, which cleans them up when a component unmounts.
+CSS (`app/globals.css`) handles hover states and the cursor blink. Every
+animation checks `prefersReducedMotion()` first and leaves the page as the
+server rendered it for visitors who ask the system for reduced motion, and
+none of them re-render React on pointer movement or scroll.
 
 Text is never written inline: add the key to the Portuguese dictionary in
-`contexts/language-context.tsx` first, and TypeScript will then require the
+`lib/i18n.ts` first, and TypeScript will then require the
 English and Spanish versions.
 
 ## Assets

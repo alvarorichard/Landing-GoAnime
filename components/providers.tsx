@@ -1,20 +1,31 @@
 "use client"
 
 import type React from "react"
-import { MotionConfig } from "framer-motion"
+import { useEffect } from "react"
+import { ScrollTrigger } from "@/components/motion"
 import { LanguageProvider } from "@/contexts/language-context"
 import { ProjectProvider } from "@/contexts/project-context"
+import type { Language } from "@/lib/i18n"
 import type { Project } from "@/lib/project"
 
-// reducedMotion="user": framer-motion drops transform animations for visitors
-// who ask the system for reduced motion; CSS animations do the same in
-// globals.css.
-export function Providers({ project, children }: { project: Project; children: React.ReactNode }) {
+export function Providers({
+  language,
+  project,
+  children,
+}: {
+  language: Language
+  project: Project
+  children: React.ReactNode
+}) {
+  // The web fonts arrive after the first layout and change the height of
+  // every heading; measure the scroll animations again once they are in.
+  useEffect(() => {
+    document.fonts?.ready.then(() => ScrollTrigger.refresh())
+  }, [])
+
   return (
-    <MotionConfig reducedMotion="user">
-      <LanguageProvider>
-        <ProjectProvider project={project}>{children}</ProjectProvider>
-      </LanguageProvider>
-    </MotionConfig>
+    <LanguageProvider language={language}>
+      <ProjectProvider project={project}>{children}</ProjectProvider>
+    </LanguageProvider>
   )
 }

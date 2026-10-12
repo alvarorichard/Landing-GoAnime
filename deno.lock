@@ -1,14 +1,13 @@
 {
   "version": "5",
   "specifiers": {
-    "npm:@radix-ui/react-slot@^1.4.0": "1.4.0_@types+react@19.3.0_react@19.3.0",
+    "npm:@gsap/react@^2.1.2": "2.1.2_gsap@3.15.0_react@19.3.0",
     "npm:@tailwindcss/postcss@^4.3.3": "4.3.3",
     "npm:@types/node@24": "24.19.2",
     "npm:@types/react-dom@^19.3.0": "19.3.0_@types+react@19.3.0",
     "npm:@types/react@^19.3.0": "19.3.0",
-    "npm:class-variance-authority@~0.7.1": "0.7.1",
     "npm:clsx@^2.1.1": "2.1.1",
-    "npm:framer-motion@^14.1.0": "14.1.0_react@19.3.0_react-dom@19.3.0",
+    "npm:gsap@^3.15.0": "3.15.0",
     "npm:lucide-react@^1.54.0": "1.54.0_@types+react@19.3.0_react@19.3.0",
     "npm:next@^16.4.0": "16.4.0_react@19.3.0_react-dom@19.3.0",
     "npm:postcss@^8.5.29": "8.5.29",
@@ -26,6 +25,13 @@
       "integrity": "sha512-Xz4Tpyki7XyrpbUK1jR1AhdAdaXyhhY4lZ3neLodmhpuWfy2PAQN5B46sAiU4liOXGLkHypn/qU+jvfWSCYYLA==",
       "dependencies": [
         "tslib"
+      ]
+    },
+    "@gsap/react@2.1.2_gsap@3.15.0_react@19.3.0": {
+      "integrity": "sha512-JqliybO1837UcgH2hVOM4VO+38APk3ECNrsuSM4MuXp+rbf+/2IG2K1YJiqfTcXQHH7XlA0m3ykniFYstfq0Iw==",
+      "dependencies": [
+        "gsap",
+        "react"
       ]
     },
     "@img/colour@1.1.0": {
@@ -266,27 +272,6 @@
       "os": ["win32"],
       "cpu": ["x64"]
     },
-    "@radix-ui/react-compose-refs@1.1.5_@types+react@19.3.0_react@19.3.0": {
-      "integrity": "sha512-+48PbAAbq3didjJxa+OaWY2ZwgAKsNiRGyeHKszblZMQ+kcpd9pAaT11cMkGEie0vsOi3QdeTE6d5Fe3Gn61kA==",
-      "dependencies": [
-        "@types/react",
-        "react"
-      ],
-      "optionalPeers": [
-        "@types/react"
-      ]
-    },
-    "@radix-ui/react-slot@1.4.0_@types+react@19.3.0_react@19.3.0": {
-      "integrity": "sha512-IuMVHZ+Ah5fkctu3X3qeFrV/ZrBcuWuDTFUUPfS/L5hvoTjzhp/HdWGE14CsQombPdEidsa33HVlYZXi49PZ1Q==",
-      "dependencies": [
-        "@radix-ui/react-compose-refs",
-        "@types/react",
-        "react"
-      ],
-      "optionalPeers": [
-        "@types/react"
-      ]
-    },
     "@swc/helpers@0.5.23": {
       "integrity": "sha512-5lSsMOTXURePglDfvuAQUqkGek9Hg2kksOYay2m0+XR++b2NWYL/4sWyuvVBIs8oKnJaxkdi9whaL/sqN13afw==",
       "dependencies": [
@@ -516,12 +501,6 @@
     "caniuse-lite@1.0.30001815": {
       "integrity": "sha512-uDybUEyfgbyJJ93J1vikTylBX31AkdVYeVPeffMQpf8XN7hSfr0oZOn4VFOIMNvtU5+rHvC5Udg2TgtJKHm23Q=="
     },
-    "class-variance-authority@0.7.1": {
-      "integrity": "sha512-Ka+9Trutv7G8M6WT6SeiRWz792K5qEqIGEGzXKhAE6xOWAY6pPH8U+9IY3oCMv6kqTmLsv7Xh/2w2RigkePMsg==",
-      "dependencies": [
-        "clsx"
-      ]
-    },
     "client-only@0.0.1": {
       "integrity": "sha512-IV3Ou0jSMzZrd3pZ48nLkT9DA7Ag1pnPzaiQhpW7c3RbcqqzvzzVu+L8gfqMp/8IM2MQtSiqaCxrrcfu8I8rMA=="
     },
@@ -541,22 +520,11 @@
         "tapable"
       ]
     },
-    "framer-motion@14.1.0_react@19.3.0_react-dom@19.3.0": {
-      "integrity": "sha512-QsdZSdWoyQfUmgi+GZfow8Du5COG6VRYEo9FlgKUPgH87/Le/fYekHCAKwLdYKHdCZcZfWHg4iOxlD6RoqXciQ==",
-      "dependencies": [
-        "motion-dom",
-        "motion-utils",
-        "react",
-        "react-dom",
-        "tslib"
-      ],
-      "optionalPeers": [
-        "react",
-        "react-dom"
-      ]
-    },
     "graceful-fs@4.2.11": {
       "integrity": "sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ=="
+    },
+    "gsap@3.15.0": {
+      "integrity": "sha512-dMW4CWBTUK1AEEDeZc1g4xpPGIrSf9fJF960qbTZmN/QwZIWY5wgliS6JWl9/25fpTGJrMRtSjGtOmPnfjZB+A=="
     },
     "jiti@2.7.0": {
       "integrity": "sha512-AC/7JofJvZGrrneWNaEnJeOLUx+JlGt7tNa0wZiRPT4MY1wmfKjt2+6O2p2uz2+skll8OZZmJMNqeke7kKbNgQ==",
@@ -651,15 +619,6 @@
       "dependencies": [
         "@jridgewell/sourcemap-codec"
       ]
-    },
-    "motion-dom@14.1.0": {
-      "integrity": "sha512-FyFLkNUAAETzCvf851mZcl+v+kaZrKq+UM+XmkY4G8n+ny/WYfiWh9j0fhSQ1KOKVQrM9/cLO11THO2k71HJlg==",
-      "dependencies": [
-        "motion-utils"
-      ]
-    },
-    "motion-utils@14.1.0": {
-      "integrity": "sha512-xd4FeWOnnXsJHmAaRCLNbOS7mEaNOangjMt3Pl241H07f1kxW48fADQ/8O5hLLNhf1qdlozgY3PPAHBdOoU7AA=="
     },
     "nanoid@3.3.20": {
       "integrity": "sha512-uKdg2G3GNCKQn9byYOpxbGqrT2fGO5KRt5J/8b3pok8rT6qxGWF6hxMyJiEYtAf+FVyYuD9hRaDqX5uPFYJ4ZQ==",
@@ -816,14 +775,13 @@
   "workspace": {
     "packageJson": {
       "dependencies": [
-        "npm:@radix-ui/react-slot@^1.4.0",
+        "npm:@gsap/react@^2.1.2",
         "npm:@tailwindcss/postcss@^4.3.3",
         "npm:@types/node@24",
         "npm:@types/react-dom@^19.3.0",
         "npm:@types/react@^19.3.0",
-        "npm:class-variance-authority@~0.7.1",
         "npm:clsx@^2.1.1",
-        "npm:framer-motion@^14.1.0",
+        "npm:gsap@^3.15.0",
         "npm:lucide-react@^1.54.0",
         "npm:next@^16.4.0",
         "npm:postcss@^8.5.29",

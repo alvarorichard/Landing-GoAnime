@@ -3,7 +3,7 @@ import { REPO, type Release, type ReleaseAsset } from "@/lib/releases"
 
 // The numbers that show the project is alive: stars, downloads, contributors,
 // the latest release and the Discord server. They are fetched on the server
-// and cached (GitHub for an hour, Discord for ten minutes), so they arrive in
+// and cached (ten minutes), so they arrive in
 // the first HTML and the APIs see a few requests an hour instead of one per
 // visitor. Anything that cannot be fetched comes back null or empty, and the
 // page leaves it out; a failed request is not cached, so the next render
@@ -41,7 +41,8 @@ interface ApiInvite {
 }
 
 const MINUTE = 60
-const HOUR = 60 * MINUTE
+// Short enough that a new release or contributor shows up within minutes.
+const CACHE = 10 * MINUTE
 
 async function getJSON<T>(url: string, revalidate: number, headers?: Record<string, string>): Promise<T | null> {
   try {
@@ -61,11 +62,11 @@ export async function getProject(): Promise<Project> {
   const api = `https://api.github.com/repos/${REPO}`
 
   const [repo, releases, contributors, invite] = await Promise.all([
-    getJSON<{ stargazers_count: number }>(api, HOUR, github),
+    getJSON<{ stargazers_count: number }>(api, CACHE, github),
     // One page of 100 holds every release so far.
-    getJSON<ApiRelease[]>(`${api}/releases?per_page=100`, HOUR, github),
-    getJSON<ApiContributor[]>(`${api}/contributors?per_page=100`, HOUR, github),
-    getJSON<ApiInvite>(`https://discord.com/api/v9/invites/${DISCORD_INVITE}?with_counts=true`, 10 * MINUTE),
+    getJSON<ApiRelease[]>(`${api}/releases?per_page=100`, CACHE, github),
+    getJSON<ApiContributor[]>(`${api}/contributors?per_page=100&anon=false`, CACHE, github),
+    getJSON<ApiInvite>(`https://discord.com/api/v9/invites/${DISCORD_INVITE}?with_counts=true`, CACHE),
   ])
 
   // The same release /releases/latest returns: the newest that is neither a

@@ -64,6 +64,10 @@ export const viewport: Viewport = {
   colorScheme: "dark",
 }
 
+// Rebuilt in the background at most every ten minutes, so the release and the
+// counters never go stale however long the deployment has been up.
+export const revalidate = 600
+
 export default async function RootLayout({ children, params }: Params & { children: React.ReactNode }) {
   const language = await languageOf(params)
   const project = await getProject()
